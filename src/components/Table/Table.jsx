@@ -11,7 +11,7 @@ class CustomTable extends React.Component {
         const { classes, tableHead, tableData, tableHeaderColor } = this.props;
         return (
             <div className={classes.tableResponsive}>
-                <Table className={classes.table}>
+                <Table className={classes.table} >
                     {
                         tableHead !== undefined ? (
                             <TableHead className={classes[tableHeaderColor+"TableHeader"]}>
@@ -20,7 +20,6 @@ class CustomTable extends React.Component {
                                         tableHead.map((prop,key) => {
                                             return (
                                                 <TableCell
-                                                    className={classes.tableCell + " " + classes.tableHeadCell}
                                                     key={key}>
                                                     {prop}
                                                 </TableCell>
@@ -35,7 +34,7 @@ class CustomTable extends React.Component {
                         {
                             tableData.map((prop,key) => {
                                 return (
-                                    <TableRow key={key}>
+                                    <TableRow key={key} >
                                         {
                                             prop.map((prop,key) => {
                                                 return (

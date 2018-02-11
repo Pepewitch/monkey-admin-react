@@ -1242,6 +1242,7 @@ const tableStyle = theme => ({
         color: grayColor,
     },
     table: {
+        fontSize : '1.2em',
         marginBottom: '0',
         width: '100%',
         maxWidth: '100%',
@@ -1256,6 +1257,7 @@ const tableStyle = theme => ({
     },
     tableCell: {
         ...defaultFont,
+        fontSize : '0.8em',
         lineHeight: '1.42857143',
         padding: '12px 8px',
         verticalAlign: 'middle',

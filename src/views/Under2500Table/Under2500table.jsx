@@ -52,6 +52,9 @@ class Under2500Table extends React.Component{
                                     // cardSubtitle="Here is a subtitle for this table"
                                     content={
                                         <Table
+                                            classes={{
+                                                tableCell : "under2500cell"
+                                            }}
                                             tableHeaderColor="primary"
                                             tableHead={['ID','Name','Balance']}
                                             tableData={this.state.data?this.state.data.arr.filter(e=>{return e.subject === obj.sbj[0]}).map(e=>{
