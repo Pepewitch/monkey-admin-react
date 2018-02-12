@@ -5,7 +5,7 @@ import {
 } from 'material-ui';
 
 import {
-    RegularCard, Table, ItemGrid
+    RegularCard, Table, ItemGrid, Under2500SnackBar as Snack
 } from 'components';
 import 'whatwg-fetch';
 
@@ -19,8 +19,15 @@ class Under2500Table extends React.Component{
                 {sbj:'Chemistry',num:3,color:'blue'} ,
                 {sbj:'English',num:4 , color : 'blue'} ,
                 // {sbj:'Bio',num:5}
-            ]
+            ],
+            open:false,
+            cardTitle:""
         }
+        this.handleClick = this.handleClick.bind(this)
+    }
+    handleClick(e,eachRow){
+        console.log(eachRow)
+        this.setState({open:true , cardTitle:eachRow})
     }
     componentDidMount(){
         fetch(global.postlink+'/post/v1/getUnder2500', {
@@ -41,33 +48,50 @@ class Under2500Table extends React.Component{
     }
     render(){
         return (
-            <Grid container>
-                {
-                    this.state.sbjArr.map((obj)=>{
-                        return (
-                            <ItemGrid xs={12} sm={6} md={6} key={obj.sbj}>
-                                <RegularCard
-                                    cardTitle={obj.sbj}
-                                    headerColor={obj.color}
-                                    // cardSubtitle="Here is a subtitle for this table"
-                                    content={
-                                        <Table
-                                            classes={{
-                                                tableCell : "under2500cell"
-                                            }}
-                                            tableHeaderColor="primary"
-                                            tableHead={['ID','Name','Balance']}
-                                            tableData={this.state.data?this.state.data.arr.filter(e=>{return e.subject === obj.sbj[0]}).map(e=>{
-                                                return [''+e.studentID,e.firstname+'('+e.nickname+')',''+e.total];
-                                            }) : []}
-                                        />
-                                    }
-                                />
-                            </ItemGrid>
-                        )
-                    })
-                }
-            </Grid>
+            <div>
+                <Grid container onClick={ () => { if(this.state.open){this.setState({open:false})} } }>
+                    {
+                        this.state.sbjArr.map((obj)=>{
+                            return (
+                                <ItemGrid xs={12} sm={6} md={6} key={obj.sbj}>
+                                    <RegularCard
+                                        cardTitle={obj.sbj}
+                                        headerColor={obj.color}
+                                        // cardSubtitle="Here is a subtitle for this table"
+                                        content={
+                                            <Table
+                                                handleClick={this.handleClick}
+                                                classes={{
+                                                    tableCell : "under2500cell",
+                                                    tableRow : "under2500row"
+                                                }}
+                                                tableHeaderColor="primary"
+                                                tableHead={['ID','Name','Balance']}
+                                                tableData={this.state.data?this.state.data.arr.filter(e=>{return e.subject === obj.sbj[0]}).map(e=>{
+                                                    return [''+e.studentID,e.firstname+'('+e.nickname+')',''+e.total];
+                                                }) : []}
+                                            />
+                                        }
+                                    />
+                                </ItemGrid>
+                            )
+                        })
+                    }
+                </Grid>
+                <Grid container justify='center'>
+                    <ItemGrid xs={12} sm={12} md={12}> 
+                        <Snack
+                            place="br"
+                            color="info"
+                            message="Welcome to MATERIAL DASHBOARD React - a beautiful freebie for every web developer."
+                            open={this.state.open}
+                            closeNotification={() => this.setState({'open':false})}
+                            close
+                        />
+                    </ItemGrid>
+                </Grid>
+                
+            </div>
         );
     }
 }

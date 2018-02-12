@@ -79,6 +79,8 @@ import Warning from "./Typography/Warning.jsx";
 import Danger from "./Typography/Danger.jsx";
 import Small from "./Typography/Small.jsx";
 import A from './Typography/A.jsx';
+import Under2500SnackBar from './Under2500Snackbar/Under2500SnackBar.jsx'
+
 
 export {
     // Cards
@@ -103,4 +105,6 @@ export {
     Tasks,
     // Typography
     P, Quote, Muted, Primary, Info, Success, Warning, Danger, Small, A,
+
+    Under2500SnackBar
 };
