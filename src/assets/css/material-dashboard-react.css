@@ -222,3 +222,14 @@ footer ul li a:hover {
 .under2500row:hover{
     background-color: rgba(0, 0, 0, 0.05)
 }
+@font-face { font-family: THSarabun; src: url(THSarabunBold.ttf); }
+.under2500view *{
+    font-size: 26px!important;
+    font-family: THSarabun!important;
+    font-weight: lighter;
+}
+
+.under2500info {
+    max-height: 50vh!important;
+    overflow: auto;
+}

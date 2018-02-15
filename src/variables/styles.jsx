@@ -1572,11 +1572,6 @@ const Under2500SnackBarStyle = {
         borderRadius: '3px',
         boxShadow: '0 12px 20px -10px rgba(255, 255, 255, 0.28), 0 4px 20px 0px rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba(255, 255, 255, 0.2)',
     },
-    message: {
-        padding: '0',
-        display: 'block',
-        maxWidth: '100%',
-    },
     info: {
         backgroundColor: '#00d3ee',
         color: '#ffffff',
@@ -1602,6 +1597,32 @@ const Under2500SnackBarStyle = {
         color: '#ffffff',
         ...primaryBoxShadow,
     },
+    message: {
+        padding: '0',
+        display: 'block',
+        maxWidth: '100%',
+    },
+    close: {
+        width: '14px',
+        height: '14px',
+    },
+    iconButton: {
+        width: '24px',
+        height: '24px',
+    },
+    icon: {
+        display: 'block',
+        left: '15px',
+        position: 'absolute',
+        top: '50%',
+        marginTop: '-15px',
+        width: '30px',
+        height: '30px',
+    },
+    iconMessage: {
+        paddingLeft: '65px',
+        display: 'block'
+    }
 }
 
 module.exports = {

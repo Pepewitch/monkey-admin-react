@@ -8,7 +8,7 @@ import { tableStyle } from 'variables/styles';
 
 class CustomTable extends React.Component {
     render(){
-        const { classes, tableHead, tableData, tableHeaderColor , handleClick} = this.props;
+        const { classes, tableHead, tableData, tableHeaderColor , handleClick , remark} = this.props;
         return (
             <div className={classes.tableResponsive}>
                 <Table className={classes.table} >
@@ -35,7 +35,7 @@ class CustomTable extends React.Component {
                             tableData.map((prop,key) => {
                                 let eachRow = prop
                                 return (
-                                    <TableRow key={key} className={classes.tableRow} onClick={(e)=>handleClick(e,eachRow)}>
+                                    <TableRow key={key} className={classes.tableRow} onClick={(e)=>handleClick(e,eachRow,remark)}>
                                         {
                                             prop.map((prop,key) => {
                                                 return (

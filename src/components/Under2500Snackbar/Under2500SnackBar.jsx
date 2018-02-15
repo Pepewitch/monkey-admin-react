@@ -5,24 +5,24 @@ import {
 import { Close } from 'material-ui-icons';
 import PropTypes from 'prop-types';
 
-import { snackbarContentStyle } from 'variables/styles';
+import { Under2500SnackBarStyle } from 'variables/styles';
 
 class Under2500Snackbar extends React.Component{
     render(){
         const { classes, message, color, close, icon, place, open } = this.props;
-        var action = [];
-        if(close !== undefined){
-            action = [
-                <IconButton
-                    className={classes.iconButton}
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    onClick={() => this.props.closeNotification()}>
-                    <Close className={classes.close}/>
-                </IconButton>
-            ];
-        }
+        // var action = [];
+        // if(close !== undefined){
+        //     action = [
+        //         <IconButton
+        //             className={classes.iconButton}
+        //             key="close"
+        //             aria-label="Close"
+        //             color="inherit"
+        //             onClick={() => this.props.closeNotification()}>
+        //             <Close className={classes.close}/>
+        //         </IconButton>
+        //     ];
+        // }
         return (
             <Snack
                 anchorOrigin={{
@@ -36,7 +36,7 @@ class Under2500Snackbar extends React.Component{
                         <span className={(icon!==undefined?classes.iconMessage:"")}>{message}</span>
                     </div>
                 }
-                action={action}
+                // action={action}
                 SnackbarContentProps={{
                     classes: {
                         root: classes.root + " " + classes[color],
@@ -58,4 +58,4 @@ Under2500Snackbar.propTypes = {
     open: PropTypes.bool
 };
 
-export default withStyles(snackbarContentStyle)(Under2500Snackbar);
+export default withStyles(Under2500SnackBarStyle)(Under2500Snackbar);
