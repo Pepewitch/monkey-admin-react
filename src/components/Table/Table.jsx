@@ -8,10 +8,10 @@ import { tableStyle } from 'variables/styles';
 
 class CustomTable extends React.Component {
     render(){
-        const { classes, tableHead, tableData, tableHeaderColor , handleClick , remark} = this.props;
+        const { classes, tableHead, tableData, tableHeaderColor , handleClick , remark , bodyStyle} = this.props;
         return (
-            <div className={classes.tableResponsive}>
-                <Table className={classes.table} >
+            <div className={classes.table}>
+                <Table>
                     {
                         tableHead !== undefined ? (
                             <TableHead className={classes[tableHeaderColor+"TableHeader"]}>
@@ -20,6 +20,7 @@ class CustomTable extends React.Component {
                                         tableHead.map((prop,key) => {
                                             return (
                                                 <TableCell
+                                                    className={classes.tableHeadCell}
                                                     key={key}>
                                                     {prop}
                                                 </TableCell>
@@ -35,7 +36,7 @@ class CustomTable extends React.Component {
                             tableData.map((prop,key) => {
                                 let eachRow = prop
                                 return (
-                                    <TableRow key={key} className={classes.tableRow} onClick={(e)=>handleClick(e,eachRow,remark)}>
+                                    <TableRow key={key} className={classes.tableRow} onClick={(e)=>{if(handleClick){handleClick(e,eachRow,remark)}}} >
                                         {
                                             prop.map((prop,key) => {
                                                 return (

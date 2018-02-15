@@ -1251,9 +1251,11 @@ const tableStyle = theme => ({
         borderCollapse: 'collapse',
     },
     tableHeadCell: {
-        color: 'inherit',
+        color: 'grey',
         ...defaultFont,
         fontSize: '1em',
+        padding:'14px 14px',
+        textAlign:'center'
     },
     tableCell: {
         ...defaultFont,
@@ -1261,6 +1263,7 @@ const tableStyle = theme => ({
         lineHeight: '1.42857143',
         padding: '12px 8px',
         verticalAlign: 'middle',
+        textAlign:'center'
     },
     tableResponsive: {
         width: '100%',
@@ -1562,6 +1565,8 @@ const snackbarContentStyle = {
 const Under2500SnackBarStyle = {
     root: {
         ...defaultFont,
+        minWidth:'50%',
+        maxWidth:'100%',
         position: 'relative',
         padding: '20px 15px',
         lineHeight: '20px',

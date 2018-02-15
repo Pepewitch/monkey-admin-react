@@ -24,26 +24,26 @@ class Under2500Snackbar extends React.Component{
         //     ];
         // }
         return (
-            <Snack
-                anchorOrigin={{
-                    vertical: place.indexOf("t") === -1 ? "bottom":"top",
-                    horizontal: place.indexOf("l") !== -1 ? "left":place.indexOf("c") !== -1 ? "center":"right"
-                }}
-                open={open}
-                message={
-                    <div>
-                        {icon !== undefined ?  (<this.props.icon className={classes.icon}/>):null}
-                        <span className={(icon!==undefined?classes.iconMessage:"")}>{message}</span>
-                    </div>
-                }
-                // action={action}
-                SnackbarContentProps={{
-                    classes: {
-                        root: classes.root + " " + classes[color],
-                        message: classes.message
+                <Snack
+                    anchorOrigin={{
+                        vertical: place.indexOf("t") === -1 ? "bottom":"top",
+                        horizontal: place.indexOf("l") !== -1 ? "left":place.indexOf("c") !== -1 ? "center":"right"
+                    }}
+                    open={open}
+                    message={
+                        <div>
+                            {icon !== undefined ?  (<this.props.icon className={classes.icon}/>):null}
+                            <div className={(icon!==undefined?classes.iconMessage:"")}>{message}</div>
+                        </div>
                     }
-                }}
-            />
+                    // action={action}
+                    SnackbarContentProps={{
+                        classes: {
+                            root: classes.root + " " + classes[color],
+                            message: classes.message
+                        }
+                    }}
+                />
         );
     }
 }

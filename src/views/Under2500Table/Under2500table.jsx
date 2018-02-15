@@ -54,7 +54,7 @@ class Under2500Table extends React.Component {
                     let dateObj = new Date(data.transactionArr[i].timestamp)
                     let date = dateObj.toLocaleDateString().split('/')
                     eachRow.push((date[1].length>1?date[1]:('0'+date[1]))+'/'+(date[0].length>1?date[0]:('0'+date[0]))+'/'+date[2])
-                    eachRow.push(dateObj.toLocaleTimeString())
+                    eachRow.push(dateObj.toTimeString().split(' ')[0])
                     cardData.push(eachRow)
                 }
                 for(let i = data.transactionArr.length-1 ; i > -1 ; i--){
@@ -64,7 +64,6 @@ class Under2500Table extends React.Component {
                     eachRow.push(data.transactionArr[i].reason)
                     eachRow.push(data.transactionArr[i].sender)
                 }
-                console.log(cardData)
                 this.setState({open:true,cardTitle:cardTitle,cardData:cardData})
             })
         }
@@ -125,9 +124,7 @@ class Under2500Table extends React.Component {
                                     headerColor={"orange"}
                                     content={
                                         <Table
-                                            clases={{
-                                                table : "under2500info"
-                                            }}
+                                            classes={{table:"under2500info"}}
                                             tableHeaderColor="primary"
                                             tableHead={['Date', 'Time', 'Value', 'Balance', 'Reason','Sender']}
                                             tableData={this.state.cardData}
