@@ -231,5 +231,5 @@ footer ul li a:hover {
 
 .under2500info {
     max-height: 50vh!important;
-    overflow: auto;
+    overflow: hidden;
 }

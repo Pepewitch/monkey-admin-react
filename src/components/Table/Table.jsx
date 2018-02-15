@@ -3,7 +3,6 @@ import {
     withStyles, Table, TableHead, TableRow, TableBody, TableCell
 } from 'material-ui';
 import PropTypes from 'prop-types';
-
 import { tableStyle } from 'variables/styles';
 
 class CustomTable extends React.Component {
