@@ -4,16 +4,20 @@ import {
 } from 'material-ui';
 
 import {
-    ProfileCard, RegularCard, Button, CustomInput, ItemGrid
+    ProfileCard, RegularCard, Button, CustomInput, ItemGrid ,Table
 } from 'components';
-
-import avatar from 'assets/img/faces/marc.jpg';
-
+import queryString from 'query-string';
+import avatar from 'assets/img/faces/no-img.gif';
 class UserProfile extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {query : queryString.parse(this.props.location.search)}
+    }
     render(){
         return (
             <div>
-                <Grid container>
+                {this.state.query.id?
+                    <Grid container>
                     <ItemGrid xs={12} sm={12} md={8}>
                         <RegularCard
                             cardTitle="Edit Profile"
@@ -127,15 +131,37 @@ class UserProfile extends React.Component{
                     <ItemGrid xs={12} sm={12} md={4}>
                         <ProfileCard
                             avatar={avatar}
-                            subtitle="CEO / CO-FOUNDER"
-                            title="Alec Thompson"
-                            description="Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is..."
+                            title={this.state.profile?this.state.profile.name:""}
+                            description={this.state.profile?"":""}
                             footer={
-                                <Button color="primary" round>Follow</Button>
+                                <Button color="primary" round>View history</Button>
                             }
                         />
                     </ItemGrid>
                 </Grid>
+                :
+                <ItemGrid xs={12} sm={12} md={12}>
+                    <RegularCard
+                        cardTitle={"All student"}
+                        // headerColor={obj.color}
+                        // cardSubtitle="Here is a subtitle for this table"
+                        content={
+                            <Table
+                                // remark={obj.sbj}
+                                // handleClick={this.handleClick}
+                                classes={{
+                                    tableCell: "under2500cell",
+                                    tableRow: "under2500row"
+                                }}
+                                tableHeaderColor="primary"
+                                tableHead={['ID', 'Name', 'Balance']}
+                                tableData={[]}
+                            />
+                        }
+                    />
+                </ItemGrid>
+                }
+                
             </div>
         );
     }
