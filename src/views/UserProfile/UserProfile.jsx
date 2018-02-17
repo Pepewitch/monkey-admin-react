@@ -19,7 +19,9 @@ class UserProfile extends React.Component{
         fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
             console.log(data)
             this.setState({allstudent:data.transactionArr.map((each)=>{
-                return [each.studentID,each.subject,each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
+                let date = new Date(each.lastUpdate)
+                let day = date.toLocaleDateString().split('/')
+                return [each.studentID,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.subject,each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
             })})
         })
     }
@@ -164,7 +166,7 @@ class UserProfile extends React.Component{
                                     tableRow: "under2500row"
                                 }}
                                 tableHeaderColor="primary"
-                                tableHead={['ID','Subject','Name','Balance']}
+                                tableHead={['ID','last update','Subject','Name','Balance']}
                                 tableData={this.state.allstudent?this.state.allstudent:[]}
                             />
                         }
