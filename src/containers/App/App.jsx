@@ -91,7 +91,7 @@ class App extends React.Component{
                                 </div>
                             )
                     }
-                    {this.getRoute() ? (<Footer />):(null)}
+                    {/* {this.getRoute() ? (<Footer />):(null)} */}
                 </div>
             </div>
         );

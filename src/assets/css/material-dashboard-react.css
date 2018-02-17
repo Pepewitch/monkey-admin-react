@@ -231,5 +231,10 @@ footer ul li a:hover {
 
 .under2500info {
     max-height: 50vh!important;
-    overflow: hidden;
+    overflow: auto;
+}
+
+.allstudenttable {
+    max-height: 70vh!important;
+    overflow: auto;
 }

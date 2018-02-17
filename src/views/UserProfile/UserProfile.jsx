@@ -14,7 +14,13 @@ class UserProfile extends React.Component{
         super(props)
         console.log(this.props)
         this.state = {query : queryString.parse(this.props.location.search)}
+        this.selectRow = this.selectRow.bind(this)
     }
+    selectRow(e,eachRow,remark){
+        this.setState({query:{id:eachRow[0]}})
+        console.log(this.refs.user)
+    }
+
     componentDidMount(){
         fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
             console.log(data)
@@ -27,7 +33,7 @@ class UserProfile extends React.Component{
     }
     render(){
         return (
-            <div>
+            <div ref="user">
                 {this.state.query.id?
                     <Grid container>
                     <ItemGrid xs={12} sm={12} md={8}>
@@ -142,7 +148,7 @@ class UserProfile extends React.Component{
                     </ItemGrid>
                     <ItemGrid xs={12} sm={12} md={4}>
                         <ProfileCard
-                            avatar={avatar}
+                            avatar={"https://www.monkey-monkey.com/profile/"+this.state.query.id+'.jpg'}
                             title={this.state.profile?this.state.profile.name:"asdf"}
                             description={this.state.profile?"":""}
                             footer={
@@ -152,26 +158,29 @@ class UserProfile extends React.Component{
                     </ItemGrid>
                 </Grid>
                 :
-                <ItemGrid xs={12} sm={12} md={12}>
-                    <RegularCard
-                        cardTitle={<div>All student</div>}
-                        // headerColor={obj.color}
-                        // cardSubtitle="Here is a subtitle for this table"
-                        content={
-                            <Table
-                                // remark={obj.sbj}
-                                // handleClick={this.handleClick}
-                                classes={{
-                                    tableCell: "under2500cell",
-                                    tableRow: "under2500row"
-                                }}
-                                tableHeaderColor="primary"
-                                tableHead={['ID','last update','Subject','Name','Balance']}
-                                tableData={this.state.allstudent?this.state.allstudent:[]}
-                            />
-                        }
-                    />
-                </ItemGrid>
+                <div class="under2500view" ref="allstudent">
+                    <ItemGrid xs={12} sm={12} md={12}>
+                        <RegularCard
+                            cardTitle={<div>All student</div>}
+                            // headerColor={obj.color}
+                            // cardSubtitle="Here is a subtitle for this table"
+                            content={
+                                <Table
+                                    // remark={obj.sbj}
+                                    handleClick={this.selectRow}
+                                    classes={{
+                                        table: "allstudenttable",
+                                        tableCell: "under2500cell",
+                                        tableRow: "under2500row"
+                                    }}
+                                    tableHeaderColor="primary"
+                                    tableHead={['ID','last updated','Subject','Name','Balance']}
+                                    tableData={this.state.allstudent?this.state.allstudent:[]}
+                                />
+                            }
+                        />
+                    </ItemGrid>
+                </div>
                 }
                 
             </div>
