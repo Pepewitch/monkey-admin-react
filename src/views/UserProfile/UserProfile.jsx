@@ -152,7 +152,11 @@ class UserProfile extends React.Component{
                 :
                 <ItemGrid xs={12} sm={12} md={12}>
                     <RegularCard
+<<<<<<< HEAD
                         cardTitle={<div>All student</div>}
+=======
+                        cardTitle={"All student"}
+>>>>>>> 1c349b01ba55f65025c088d399027cb1cfc951a8
                         // headerColor={obj.color}
                         // cardSubtitle="Here is a subtitle for this table"
                         content={
@@ -164,8 +168,13 @@ class UserProfile extends React.Component{
                                     tableRow: "under2500row"
                                 }}
                                 tableHeaderColor="primary"
+<<<<<<< HEAD
                                 tableHead={['ID','Subject','Name','Balance']}
                                 tableData={this.state.allstudent?this.state.allstudent:[]}
+=======
+                                tableHead={['ID', 'Name', 'Balance']}
+                                tableData={[]}
+>>>>>>> 1c349b01ba55f65025c088d399027cb1cfc951a8
                             />
                         }
                     />
