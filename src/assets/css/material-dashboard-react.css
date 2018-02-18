@@ -226,11 +226,11 @@ footer ul li a:hover {
 .under2500view *{
     font-size: 26px!important;
     font-family: THSarabun!important;
-    font-weight: lighter;
+    /* font-weight: lighter; */
 }
 
 .under2500info {
-    max-height: 50vh!important;
+    max-height: 60vh!important;
     overflow: auto;
 }
 

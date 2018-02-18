@@ -3,12 +3,20 @@ import {
     withStyles, Card, CardHeader, CardContent, CardActions, Typography
 } from 'material-ui';
 import PropTypes from 'prop-types';
-
 import { profileCardStyle } from 'variables/styles';
-
+import Noimg from 'assets/img/faces/no-img.gif';
 class ProfileCard extends React.Component{
+    constructor(props){
+        super(props)
+        this.state={
+            avatar : Noimg
+        }
+    }
+    componentDidMount(){
+        if(this.props.avatar && this.props.avatar!=this.state.avatar) this.setState({avatar:this.props.avatar})
+    }
     render(){
-        const { classes, subtitle, title, description, footer, avatar } = this.props;
+        const { classes, subtitle, title, description, footer, avatar ,content} = this.props;
         return (
             <Card className={classes.card}>
                 <CardHeader
@@ -17,7 +25,7 @@ class ProfileCard extends React.Component{
                         avatar: classes.cardAvatar,
                     }}
                     avatar={
-                        <img src={avatar} alt="..." className={classes.img}/>
+                        <img src={this.state.avatar} alt="..." className={classes.img} onError={()=>{this.setState({avatar:Noimg})}}/>
                     }
                 />
                 <CardContent className={classes.textAlign}>
@@ -30,6 +38,7 @@ class ProfileCard extends React.Component{
                     {description !== undefined ? (<Typography component="p" className={classes.cardDescription}>
                         {description}
                     </Typography>):null}
+                    {content}
                 </CardContent>
                 <CardActions className={classes.textAlign + " " + classes.cardActions}>
                     {footer}

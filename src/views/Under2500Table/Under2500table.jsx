@@ -1,4 +1,4 @@
-import { global } from 'variables/general';
+import { global , serialize } from 'variables/general';
 import React from 'react';
 import {
     Grid
@@ -7,18 +7,6 @@ import {
     RegularCard, Table, ItemGrid, Under2500SnackBar as Snack
 } from 'components';
 
-function serialize (obj, prefix) {
-    var str = [], p;
-    for (p in obj) {
-        if (obj.hasOwnProperty(p)) {
-            var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
-            str.push((v !== null && typeof v === "object") ?
-                serialize(v, k) :
-                encodeURIComponent(k) + "=" + encodeURIComponent(v));
-        }
-    }
-    return str.join("&");
-}
 
 class Under2500Table extends React.Component {
     constructor() {
@@ -137,7 +125,6 @@ class Under2500Table extends React.Component {
                         />
                     </ItemGrid>
                 </Grid>
-
             </div>
         );
     }

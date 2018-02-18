@@ -1,170 +1,122 @@
 import React from 'react';
 import {
-    Grid, InputLabel ,
+    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , FormControlLabel
 } from 'material-ui';
-
 import {
     ProfileCard, RegularCard, Button, CustomInput, ItemGrid ,Table
 } from 'components';
 import queryString from 'query-string';
 import avatar from 'assets/img/faces/no-img.gif';
-import {global} from 'variables/general';
+import {global,serialize} from 'variables/general';
+
+const formLabelStyle = {
+    margin : '5px',
+    color: 'black'
+}
+
 class UserProfile extends React.Component{
     constructor(props){
         super(props)
-        console.log(this.props)
-        this.state = {query : queryString.parse(this.props.location.search)}
+        this.state = {query : queryString.parse(this.props.location.search) , loading:true}
         this.selectRow = this.selectRow.bind(this)
     }
     selectRow(e,eachRow,remark){
-        this.setState({query:{id:eachRow[0]}})
-        console.log(this.refs.user)
+        for(let i in this.allpic){
+            if((eachRow[0]+'')===this.allpic[i].split('.')[0]){
+                this.setState({profilepic:this.allpic[i]})
+                break
+            }
+        }
+        fetch(global.postlink+'/post/studentProfile',{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body:serialize({studentID:eachRow[0]})
+        }).then(data=>data.json()).then(data=>{
+            data.subject = eachRow[1]
+            this.setState({query:{id:eachRow[0]} , profile:data})
+        })
+        for(let i = 1 ; i < global.subject.length ; i++){
+            fetch(global.postlink+'/post/v1/getTransactionFHB',{
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body:serialize({studentID:eachRow[0] , subject:global.subject[i]})
+            }).then(data=>data.json()).then(data=>{
+                console.log(data)
+            })
+        }
     }
 
     componentDidMount(){
-        fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
-            console.log(data)
-            this.setState({allstudent:data.transactionArr.map((each)=>{
-                let date = new Date(each.lastUpdate)
-                let day = date.toLocaleDateString().split('/')
-                return [each.studentID,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.subject,each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
-            })})
-        })
+        setTimeout(()=>{
+            fetch('https://www.monkey-monkey.com/post/v1/allstudentProfilePicture',{method:'post'}).then(data=>{return data.json()}).then(data=>{
+                this.allpic = data.arr
+                fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
+                    this.setState({
+                        allstudent:data.transactionArr.map((each)=>{
+                            let date = new Date(each.lastUpdate)
+                            let day = date.toLocaleDateString().split('/')
+                            return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
+                        }),
+                        loading :false
+                    })
+                })
+            })
+        },200)
     }
     render(){
         return (
-            <div ref="user">
+            <div ref="user" class="under2500view">
                 {this.state.query.id?
                     <Grid container>
                     <ItemGrid xs={12} sm={12} md={8}>
                         <RegularCard
-                            cardTitle="Edit Profile"
-                            cardSubtitle="Complete your profile"
+                            cardTitle="Activity"
+                            // cardSubtitle="Complete your profile"
                             content={
                                 <div>
-                                    <Grid container>
-                                        <ItemGrid xs={12} sm={12} md={5}>
-                                            <CustomInput
-                                                labelText="Company (disabled)"
-                                                id="company-disabled"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    disabled: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                        <ItemGrid xs={12} sm={12} md={3}>
-                                            <CustomInput
-                                                labelText="Username"
-                                                id="username"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                        <ItemGrid xs={12} sm={12} md={4}>
-                                            <CustomInput
-                                                labelText="Email address"
-                                                id="email-address"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                    </Grid>
-                                    <Grid container>
-                                        <ItemGrid xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="First Name"
-                                                id="first-name"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                        <ItemGrid xs={12} sm={12} md={6}>
-                                            <CustomInput
-                                                labelText="Last Name"
-                                                id="last-name"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                    </Grid>
-                                    <Grid container>
-                                        <ItemGrid xs={12} sm={12} md={4}>
-                                            <CustomInput
-                                                labelText="City"
-                                                id="city"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                        <ItemGrid xs={12} sm={12} md={4}>
-                                            <CustomInput
-                                                labelText="Country"
-                                                id="country"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                        <ItemGrid xs={12} sm={12} md={4}>
-                                            <CustomInput
-                                                labelText="Postal Code"
-                                                id="postal-code"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                    </Grid>
-                                    <Grid container>
-                                        <ItemGrid xs={12} sm={12} md={12}>
-                                            <InputLabel style={{color: '#AAAAAA'}}>About me</InputLabel>
-                                            <CustomInput
-                                                labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
-                                                id="about-me"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    multiline: true,
-                                                    rows: 5
-                                                }}
-                                            />
-                                        </ItemGrid>
-                                    </Grid>
+                                    
                                 </div>
-                            }
-                            footer={
-                                <Button color="primary">Update Profile</Button>
                             }
                         />
                     </ItemGrid>
                     <ItemGrid xs={12} sm={12} md={4}>
                         <ProfileCard
-                            avatar={"https://www.monkey-monkey.com/profile/"+this.state.query.id+'.jpg'}
-                            title={this.state.profile?this.state.profile.name:"asdf"}
-                            description={this.state.profile?"":""}
-                            footer={
-                                <Button color="primary" round>View history</Button>
+                            avatar={"https://www.monkey-monkey.com/profile/"+this.state.profilepic}
+                            // title={}
+                            content={
+                                <FormControl>
+                                    <FormGroup>
+                                        <FormControlLabel control={<label style={{color:"black"}}>{"StudentID :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.query.id}</label>}/>
+                                        <FormControlLabel control={<label style={{color:"black"}}>{"Name :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname}</label>}/>
+                                        <FormControlLabel control={<label style={{color:"black"}}>{"Level :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.level}</label>}/>
+                                        <FormControlLabel control={<label style={{color:"black"}}>{"Subject :"}&nbsp;</label>} label={<label style={{color:"black"}}>{global.subject[this.state.profile.subject[0]]}</label>}/>
+                                    </FormGroup>
+                                </FormControl>
                             }
+                                // (this.state.profile?(this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname):"")}
+                            // footer={
+                            //     <Button color="primary" round>View history</Button>
+                            // }
                         />
                     </ItemGrid>
                 </Grid>
                 :
-                <div class="under2500view" ref="allstudent">
+                <div ref="allstudent">
                     <ItemGrid xs={12} sm={12} md={12}>
                         <RegularCard
                             cardTitle={<div>All student</div>}
                             // headerColor={obj.color}
                             // cardSubtitle="Here is a subtitle for this table"
                             content={
+                                this.state.loading?
+                                <div align="center"><CircularProgress size={100} style={{margin:"20px"}} color="secondary"/></div>
+                                :
                                 <Table
                                     // remark={obj.sbj}
                                     handleClick={this.selectRow}
@@ -174,7 +126,7 @@ class UserProfile extends React.Component{
                                         tableRow: "under2500row"
                                     }}
                                     tableHeaderColor="primary"
-                                    tableHead={['ID','last updated','Subject','Name','Balance']}
+                                    tableHead={['ID','Subject','last updated','Name','Balance']}
                                     tableData={this.state.allstudent?this.state.allstudent:[]}
                                 />
                             }
