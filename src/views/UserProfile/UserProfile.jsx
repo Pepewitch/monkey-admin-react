@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , 
+    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , TextField , 
     FormControlLabel , ExpansionPanel , ExpansionPanelSummary , ExpansionPanelDetails , Typography
 } from 'material-ui';
 import {
-    ProfileCard, RegularCard, Button, CustomInput, ItemGrid ,Table
+    ProfileCard, RegularCard, CustomInput, ItemGrid ,Table, Button
 } from 'components';
 import queryString from 'query-string';
 import avatar from 'assets/img/faces/no-img.gif';
@@ -22,6 +22,7 @@ class UserProfile extends React.Component{
         this.selectRow = this.selectRow.bind(this)
     }
     selectRow(e,eachRow,remark){
+        this.setState({loading:true})
         for(let i in this.allpic){
             if((eachRow[0]+'')===this.allpic[i].split('.')[0]){
                 this.setState({profilepic:this.allpic[i]})
@@ -37,41 +38,78 @@ class UserProfile extends React.Component{
             body:serialize({studentID:eachRow[0]})
         }).then(data=>data.json()).then(data=>{
             data.subject = eachRow[1]
-            this.setState({query:{id:eachRow[0]} , profile:data , loading:true})
+            this.setState({query:{id:eachRow[0]} , profile:data})
         })
+        this.fetchTransaction(eachRow[0],eachRow[1])
+        
+    }
+
+    fetchTransaction(studentID , subject){
+        let fetchComplete = false;
         fetch(global.postlink+'/post/v1/getTransactionFHB',{
             method:'POST',
             headers: {
                 'Accept' : 'applicaiton/json',
                 'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
             },
-            body:serialize({studentID:eachRow[0],subject:eachRow[1]})
+            body:serialize({studentID:studentID,subject:subject})
         }).then(data=>data.json()).then(data=>{
-            console.log(data.transactionArr)
-            this.setState({activity : data.transactionArr , loading:false})
+            if(!fetchComplete){
+                fetchComplete = true;
+                for(let i = data.transactionArr.length-1 ; i > -1 ; i-- ){
+                    data.transactionArr[i].total = data.transactionArr[i+1]?(data.transactionArr[i+1].total+data.transactionArr[i].value):data.transactionArr[i].value
+                }
+                console.log(data.transactionArr)
+                this.setState({activity : data.transactionArr , loading:false})
+            }
         })
+        setTimeout(()=>{
+            if(!fetchComplete){
+                fetchComplete = true;
+                this.fetchTransaction(studentID,subject)
+            }
+        },3000)
     }
 
-    componentDidMount(){
-        setTimeout(()=>{
-            fetch('https://www.monkey-monkey.com/post/v1/allstudentProfilePicture',{method:'post'}).then(data=>{return data.json()}).then(data=>{
+    fetchInitialData(){
+        let fetchComplete = false;
+        fetch('https://www.monkey-monkey.com/post/v1/allstudentProfilePicture',{method:'post'}).then(data=>{return data.json()}).then(data=>{
+            if(!fetchComplete){
                 this.allpic = data.arr
                 fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
-                    this.setState({
-                        allstudent:data.transactionArr.map((each)=>{
-                            let date = new Date(each.lastUpdate)
-                            let day = date.toLocaleDateString().split('/')
-                            return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
-                        }),
-                        loading :false
-                    })
+                    if(!fetchComplete){
+                        fetchComplete = true
+                        this.setState({
+                            allstudent:data.transactionArr.map((each)=>{
+                                let date = new Date(each.lastUpdate)
+                                let day = date.toLocaleDateString().split('/')
+                                return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
+                            }),
+                            loading :false
+                        })
+                    }
                 })
-            })
+            }
+        })
+        setTimeout(()=>{
+            if(!fetchComplete) {
+                fetchComplete = true;
+                this.fetchInitialData()
+            }
+        },2000)
+    }
+    componentDidMount(){
+        setTimeout(()=>{
+            this.fetchInitialData()
         },200)
+    }
+
+    handleEditActivity(){
+
     }
     render(){
         return (
-            <div ref="user" class="under2500view">
+            <div ref="user" className={"under2500view"}>
                 {this.state.query.id?
                     <Grid container>
                     <ItemGrid xs={12} sm={12} md={8}>
@@ -84,22 +122,63 @@ class UserProfile extends React.Component{
                                     <div align="center"><CircularProgress size={80} style={{margin:"20px"}} color="secondary"/></div>
                                     :
                                     <div className={"under2500info"}>
-                                        <ExpansionPanel disabled style={{background:'white'}}>
+                                        <ExpansionPanel disabled style={{background:'white' , width:'100%'}}>
                                             <ExpansionPanelSummary>
-                                                <ItemGrid md={3}>
-                                                asdd
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Date</label></div>
                                                 </ItemGrid>
-                                                <ItemGrid md={3}>
-                                                asdd
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Time</label></div>
                                                 </ItemGrid>
-                                                <ItemGrid md={3}>
-                                                asdd
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Value</label></div>
                                                 </ItemGrid>
-                                                <ItemGrid md={3}>
-                                                asdd
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Balance</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Reason</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={2}>
+                                                <div align="center"><label style={{color:"black"}}>Sender</label></div>
                                                 </ItemGrid>
                                             </ExpansionPanelSummary>
                                         </ExpansionPanel>
+                                        {
+                                            this.state.activity.map(eachRow => {
+                                                let dateObj = new Date(eachRow.timestamp)
+                                                let date = dateObj.toLocaleDateString().split('/')
+                                                return <ExpansionPanel>
+                                                    <ExpansionPanelSummary>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{(date[1].length>1?date[1]:('0'+date[1]))+'/'+(date[0].length>1?date[0]:('0'+date[0]))+'/'+date[2]}</label></div>
+                                                        </ItemGrid>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{dateObj.toLocaleTimeString()}</label></div>
+                                                        </ItemGrid>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{eachRow.value}</label></div>
+                                                        </ItemGrid>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{eachRow.total}</label></div>
+                                                        </ItemGrid>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{eachRow.reason}</label></div>
+                                                        </ItemGrid>
+                                                        <ItemGrid md={2}>
+                                                        <div align="center"><label style={{color:"black"}}>{eachRow.sender}</label></div>
+                                                        </ItemGrid>
+                                                    </ExpansionPanelSummary>
+                                                    <ExpansionPanelDetails>
+                                                        <TextField variant="raised" label={"edit Value"} margin="normal" ref={eachRow._id+"value"}/>&nbsp;
+                                                        <TextField label={"edit Sender"} margin="normal" ref={eachRow._id+"sender"}/>&nbsp;
+                                                        <TextField label={"edit Reason"} margin="normal" ref={eachRow._id+"reason"}/>&nbsp;
+                                                        <Button color="success" size="small" onClick={()=>{this.handleEditActivity()}}>Submit</Button>&nbsp;
+                                                        <Button color="rose" size="small" onClick={()=>{this.handleDeleteActivity()}}>Delete</Button>
+                                                    </ExpansionPanelDetails>
+                                                </ExpansionPanel>
+                                            })
+                                        }
                                         <ExpansionPanel>
                                             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                                             <Typography>Expansion Panel 2</Typography>
