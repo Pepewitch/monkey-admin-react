@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , FormControlLabel
+    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , 
+    FormControlLabel , ExpansionPanel , ExpansionPanelSummary , ExpansionPanelDetails , Typography
 } from 'material-ui';
 import {
     ProfileCard, RegularCard, Button, CustomInput, ItemGrid ,Table
@@ -8,7 +9,7 @@ import {
 import queryString from 'query-string';
 import avatar from 'assets/img/faces/no-img.gif';
 import {global,serialize} from 'variables/general';
-
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 const formLabelStyle = {
     margin : '5px',
     color: 'black'
@@ -36,20 +37,19 @@ class UserProfile extends React.Component{
             body:serialize({studentID:eachRow[0]})
         }).then(data=>data.json()).then(data=>{
             data.subject = eachRow[1]
-            this.setState({query:{id:eachRow[0]} , profile:data})
+            this.setState({query:{id:eachRow[0]} , profile:data , loading:true})
         })
-        for(let i = 1 ; i < global.subject.length ; i++){
-            fetch(global.postlink+'/post/v1/getTransactionFHB',{
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-                },
-                body:serialize({studentID:eachRow[0] , subject:global.subject[i]})
-            }).then(data=>data.json()).then(data=>{
-                console.log(data)
-            })
-        }
+        fetch(global.postlink+'/post/v1/getTransactionFHB',{
+            method:'POST',
+            headers: {
+                'Accept' : 'applicaiton/json',
+                'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body:serialize({studentID:eachRow[0],subject:eachRow[1]})
+        }).then(data=>data.json()).then(data=>{
+            console.log(data.transactionArr)
+            this.setState({activity : data.transactionArr , loading:false})
+        })
     }
 
     componentDidMount(){
@@ -80,7 +80,39 @@ class UserProfile extends React.Component{
                             // cardSubtitle="Complete your profile"
                             content={
                                 <div>
-                                    
+                                    {this.state.loading?
+                                    <div align="center"><CircularProgress size={80} style={{margin:"20px"}} color="secondary"/></div>
+                                    :
+                                    <div className={"under2500info"}>
+                                        <ExpansionPanel disabled style={{background:'white'}}>
+                                            <ExpansionPanelSummary>
+                                                <ItemGrid md={3}>
+                                                asdd
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                asdd
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                asdd
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                asdd
+                                                </ItemGrid>
+                                            </ExpansionPanelSummary>
+                                        </ExpansionPanel>
+                                        <ExpansionPanel>
+                                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                            <Typography>Expansion Panel 2</Typography>
+                                            </ExpansionPanelSummary>
+                                            <ExpansionPanelDetails>
+                                            <Typography>
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+                                                sit amet blandit leo lobortis eget.
+                                            </Typography>
+                                            </ExpansionPanelDetails>
+                                        </ExpansionPanel>
+                                    </div>
+                                    }
                                 </div>
                             }
                         />
