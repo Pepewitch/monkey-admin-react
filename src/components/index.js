@@ -80,8 +80,8 @@ import Danger from "./Typography/Danger.jsx";
 import Small from "./Typography/Small.jsx";
 import A from './Typography/A.jsx';
 import Under2500SnackBar from './Under2500Snackbar/Under2500SnackBar.jsx'
-
-
+import AddTransaction from './AddTransaction/AddTransaction.jsx'
+import RaisedButton from './CustomButtons/RaisedButton'
 export {
     // Cards
     ChartCard, ProfileCard, RegularCard, StatsCard, TasksCard,
@@ -106,5 +106,5 @@ export {
     // Typography
     P, Quote, Muted, Primary, Info, Success, Warning, Danger, Small, A,
 
-    Under2500SnackBar
+    Under2500SnackBar , AddTransaction , RaisedButton
 };

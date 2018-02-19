@@ -1,4 +1,4 @@
-/*!
+/* !
 
  =========================================================
  * Material Dashboard React - v1.0.0 based on Material Dashboard - v1.2.0
@@ -13,6 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
  */
+ 
 .ct-grid {
     stroke: rgba(255, 255, 255, 0.2);
     stroke-width: 1px;
@@ -226,7 +227,6 @@ footer ul li a:hover {
 .under2500view *{
     font-size: 26px!important;
     font-family: THSarabun!important;
-    /* font-weight: lighter; */
 }
 
 .under2500info {
@@ -237,4 +237,40 @@ footer ul li a:hover {
 .allstudenttable {
     max-height: 70vh!important;
     overflow: auto;
+}
+
+.userview *{
+    font-size: 26px!important;
+    font-family: THSarabun!important;
+}
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/materialicons/v36/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+  }
+  
+  .material-icons {
+    font-family: 'Material Icons'!important;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .floatingBtn {
+	position: absolute;
+	right: 10%;
+	bottom: 10%;
+	height: 42px;
+	text-align: right;
 }

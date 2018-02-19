@@ -1,15 +1,18 @@
 import React from 'react';
 import {
-    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , TextField , 
-    FormControlLabel , ExpansionPanel , ExpansionPanelSummary , ExpansionPanelDetails , Typography
+    Grid, InputLabel , FormGroup , FormLabel , FormControl , CircularProgress , TextField , Button , 
+    FormControlLabel , ExpansionPanel , ExpansionPanelSummary , ExpansionPanelDetails , Typography , IconButton ,
+    Icon, Tooltip ,
+    GridList
 } from 'material-ui';
 import {
-    ProfileCard, RegularCard, CustomInput, ItemGrid ,Table, Button
+    ProfileCard, RegularCard, CustomInput, ItemGrid ,Table,AddTransaction,RaisedButton
 } from 'components';
 import queryString from 'query-string';
 import avatar from 'assets/img/faces/no-img.gif';
 import {global,serialize} from 'variables/general';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import DeleteIcon from 'material-ui-icons/Delete';
 const formLabelStyle = {
     margin : '5px',
     color: 'black'
@@ -18,14 +21,14 @@ const formLabelStyle = {
 class UserProfile extends React.Component{
     constructor(props){
         super(props)
-        this.state = {query : queryString.parse(this.props.location.search) , loading:true}
+        this.state = {query : queryString.parse(this.props.location.search) , loading:true , editloading:false}
         this.selectRow = this.selectRow.bind(this)
+        this.handleEditActivity = this.handleEditActivity.bind(this)
     }
     selectRow(e,eachRow,remark){
-        this.setState({loading:true})
         for(let i in this.allpic){
             if((eachRow[0]+'')===this.allpic[i].split('.')[0]){
-                this.setState({profilepic:this.allpic[i]})
+                this.setState({loading:true,profilepic:this.allpic[i]})
                 break
             }
         }
@@ -38,7 +41,7 @@ class UserProfile extends React.Component{
             body:serialize({studentID:eachRow[0]})
         }).then(data=>data.json()).then(data=>{
             data.subject = eachRow[1]
-            this.setState({query:{id:eachRow[0]} , profile:data})
+            this.setState({profile:data , query:{id:eachRow[0],subject:eachRow[1]}})
         })
         this.fetchTransaction(eachRow[0],eachRow[1])
         
@@ -59,8 +62,7 @@ class UserProfile extends React.Component{
                 for(let i = data.transactionArr.length-1 ; i > -1 ; i-- ){
                     data.transactionArr[i].total = data.transactionArr[i+1]?(data.transactionArr[i+1].total+data.transactionArr[i].value):data.transactionArr[i].value
                 }
-                console.log(data.transactionArr)
-                this.setState({activity : data.transactionArr , loading:false})
+                this.setState({activity : data.transactionArr , loading:false , editloading:false})
             }
         })
         setTimeout(()=>{
@@ -104,17 +106,56 @@ class UserProfile extends React.Component{
         },200)
     }
 
-    handleEditActivity(){
+    handleEditActivity(id){
+        let value = document.getElementById(id+'value').value
+        let reason = document.getElementById(id+'reason').value
+        if( value.length>0 || reason.length>0 ){
+            this.setState({editloading:true})
+            document.getElementById(id+'value').value=''
+            document.getElementById(id+'reason').value=''
+            let body = {_id:id}
+            if(value.length>0) body.value = value;
+            if(reason.length>0) body.reason = reason;
+            fetch(global.postlink+'/post/v1/editTransactionFHB',{
+                method:'POST',
+                headers: {
+                    'Accept' : 'applicaiton/json',
+                    'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body:serialize(body)
+            }).then(data=>{
+                this.fetchTransaction(this.state.query.id , this.state.query.subject)
+            })
+        }
+    }
 
+    handleDeleteActivity(id){
+        this.setState({loading:true})
+        fetch(global.postlink+'/post/v1/deleteTransactionFHB',{
+            method:'POST',
+            headers: {
+                'Accept' : 'applicaiton/json',
+                'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body:serialize({_id:id})
+        }).then(data=>{
+            this.fetchTransaction(this.state.query.id , this.state.query.subject)
+        })
     }
     render(){
         return (
-            <div ref="user" className={"under2500view"}>
+            <div className={"userview"}>
                 {this.state.query.id?
                     <Grid container>
                     <ItemGrid xs={12} sm={12} md={8}>
                         <RegularCard
-                            cardTitle="Activity"
+                            cardTitle={
+                                <div style={{verticalAlign:"middle"}}>
+                                    <label style={{color:"white",verticalAlign:"middle"}}>Activity</label>
+                                    <Button style={{float:"right",color:'white',verticalAlign:"middle"}} onClick={()=>{this.setState({query:{},loading:true},()=>{setTimeout(()=>{this.setState({loading:false})},50)})}}>to AllStudent</Button>
+                                </div>
+                            }
+                            headerColor="blue"
                             // cardSubtitle="Complete your profile"
                             content={
                                 <div>
@@ -136,25 +177,22 @@ class UserProfile extends React.Component{
                                                 <ItemGrid md={2}>
                                                 <div align="center"><label style={{color:"black"}}>Balance</label></div>
                                                 </ItemGrid>
-                                                <ItemGrid md={2}>
+                                                <ItemGrid md={4}>
                                                 <div align="center"><label style={{color:"black"}}>Reason</label></div>
-                                                </ItemGrid>
-                                                <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"black"}}>Sender</label></div>
                                                 </ItemGrid>
                                             </ExpansionPanelSummary>
                                         </ExpansionPanel>
                                         {
-                                            this.state.activity.map(eachRow => {
+                                            this.state.activity.map((eachRow,key) => {
                                                 let dateObj = new Date(eachRow.timestamp)
                                                 let date = dateObj.toLocaleDateString().split('/')
-                                                return <ExpansionPanel>
+                                                return <ExpansionPanel key={key}>
                                                     <ExpansionPanelSummary>
                                                         <ItemGrid md={2}>
                                                         <div align="center"><label style={{color:"black"}}>{(date[1].length>1?date[1]:('0'+date[1]))+'/'+(date[0].length>1?date[0]:('0'+date[0]))+'/'+date[2]}</label></div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{dateObj.toLocaleTimeString()}</label></div>
+                                                        <div align="center"><label style={{color:"black"}}>{dateObj.toString().split(' ')[4]}</label></div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
                                                         <div align="center"><label style={{color:"black"}}>{eachRow.value}</label></div>
@@ -162,19 +200,24 @@ class UserProfile extends React.Component{
                                                         <ItemGrid md={2}>
                                                         <div align="center"><label style={{color:"black"}}>{eachRow.total}</label></div>
                                                         </ItemGrid>
-                                                        <ItemGrid md={2}>
+                                                        <ItemGrid md={4}>
                                                         <div align="center"><label style={{color:"black"}}>{eachRow.reason}</label></div>
-                                                        </ItemGrid>
-                                                        <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{eachRow.sender}</label></div>
                                                         </ItemGrid>
                                                     </ExpansionPanelSummary>
                                                     <ExpansionPanelDetails>
-                                                        <TextField variant="raised" label={"edit Value"} margin="normal" ref={eachRow._id+"value"}/>&nbsp;
-                                                        <TextField label={"edit Sender"} margin="normal" ref={eachRow._id+"sender"}/>&nbsp;
-                                                        <TextField label={"edit Reason"} margin="normal" ref={eachRow._id+"reason"}/>&nbsp;
-                                                        <Button color="success" size="small" onClick={()=>{this.handleEditActivity()}}>Submit</Button>&nbsp;
-                                                        <Button color="rose" size="small" onClick={()=>{this.handleDeleteActivity()}}>Delete</Button>
+                                                        {
+                                                            this.state.editloading?
+                                                            <div align="center" style={{width:"100%"}}><CircularProgress size={50} color="primary"/></div>
+                                                            :
+                                                            <div style={{display:"inline-flex"}}>
+                                                                <TextField label={"edit Value"} margin="none" id={eachRow._id+"value"}/>&nbsp;
+                                                                <TextField label={"edit Reason"} margin="none" id={eachRow._id+"reason"}/>&nbsp;
+                                                                <div style={{float:"right"}}><div>
+                                                                <IconButton color="primary" onClick={()=>this.handleEditActivity(eachRow._id)}><Icon>send</Icon></IconButton>&nbsp;
+                                                                <IconButton color="secondary" onClick={()=>{if(window.confirm("ต้องการลบประวัตินี้?"))this.handleDeleteActivity(eachRow._id)}}><DeleteIcon/></IconButton>
+                                                                </div></div>
+                                                            </div>
+                                                        }
                                                     </ExpansionPanelDetails>
                                                 </ExpansionPanel>
                                             })
@@ -207,6 +250,7 @@ class UserProfile extends React.Component{
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Name :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname}</label>}/>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Level :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.level}</label>}/>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Subject :"}&nbsp;</label>} label={<label style={{color:"black"}}>{global.subject[this.state.profile.subject[0]]}</label>}/>
+                                        <AddTransaction/>
                                     </FormGroup>
                                 </FormControl>
                             }
@@ -218,7 +262,7 @@ class UserProfile extends React.Component{
                     </ItemGrid>
                 </Grid>
                 :
-                <div ref="allstudent">
+                <div>
                     <ItemGrid xs={12} sm={12} md={12}>
                         <RegularCard
                             cardTitle={<div>All student</div>}
