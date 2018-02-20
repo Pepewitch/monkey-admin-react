@@ -9,6 +9,8 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import AddIcon from 'material-ui-icons/Add'
 import {Tooltip} from 'material-ui'
+import {DatePickers,TimePickers} from 'components'
+import {global,serialize} from 'variables/general'
 
 const btnStyle = {
   boxShadow: '0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)',
@@ -47,13 +49,52 @@ export default class AddTransaction extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-
+  confirmAddTransaction(onSuccess){
+    let date = document.getElementById('newDate')
+    let time = document.getElementById('newTime')
+    let timestamp = new Date(date.value+' '+time.value)
+    let sender = document.getElementById('sender').value
+    let reason = document.getElementById('reason').value
+    let value = document.getElementById('value').value
+    let remark = document.getElementById('remark').value
+    if(timestamp!==undefined && sender.length>0 && reason.length>0 && value.length>0 && this.props.studentID !== undefined && this.props.subject !== undefined){
+      if(!parseInt(value)){
+        window.alert("Value จะต้องเป็นตัวเลขเท่านั้น")
+      }else if(sender.length!==5 && !parseInt(sender)){
+        window.alert("Sender จะต้องเป็น ID เท่านั้น")
+      }else{
+        let body = {
+          studentID : this.props.studentID,
+          subject : this.props.subject,
+          timestamp : timestamp.getTime(),
+          sender : sender,
+          reason : reason,
+          value : value
+        }
+        if(remark) body.remark = remark
+        fetch(global.postlink+'/post/v1/addTransactionFHB',{
+            method:'POST',
+            headers: {
+                'Accept' : 'applicaiton/json',
+                'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body:serialize(body)
+        }).then(data=>data.json()).then(data=>{
+          this.setState({ open: false });
+          if(onSuccess)onSuccess()
+        })
+      }
+    }else{
+      window.alert("กรุณากรอกข้อมูลให้เรียบร้อย")
+    }
+  }
   render() {
+    const {studentID,subject,fetchTransaction} = this.props
     return (
       <div>
         <Tooltip title="เพิ่มประวัตินักเรียน">
-            <Button variant="raised" variant="fab" style={btnStyle} color="primary" onClick={()=>{this.setState({open:true})}}>
-            <AddIcon />
+            <Button variant="raised" style={btnStyle} color="primary" onClick={()=>{this.setState({open:true})}}>
+            <AddIcon />&nbsp;ADD
             </Button>
         </Tooltip>
         <Dialog
@@ -61,27 +102,42 @@ export default class AddTransaction extends React.Component {
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogTitle id="form-dialog-title">Create new transaction</DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            {/* <DialogContentText>
               To subscribe to this website, please enter your email address here. We will send
               updates occationally.
-            </DialogContentText>
+            </DialogContentText> */}
+            <div style={{display:"inline-flex"}}>
+            <DatePickers/>&nbsp;<TimePickers/>&nbsp;
+            <TextField
+              id="remark"
+              label="Remark(Optional)"
+            />
+            </div>
+            <div style={{display:"inline-flex",padding:"10px"}}>
             <TextField
               autoFocus
-              margin="dense"
-              id="name"
-              label="Email Address"
-              type="email"
-              fullWidth
+              id="value"
+              label="Value"
+            />&nbsp;
+            <TextField
+              id="reason"
+              label="Reason"
+            />&nbsp;
+            <TextField
+              id="sender"
+              label="Sender(ID)"
+              value={studentID}
             />
+            </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Subscribe
+            <Button onClick={()=>{this.confirmAddTransaction(()=>{fetchTransaction(studentID,subject)})}} color="primary">
+              Confirm
             </Button>
           </DialogActions>
         </Dialog>

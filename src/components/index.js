@@ -82,6 +82,8 @@ import A from './Typography/A.jsx';
 import Under2500SnackBar from './Under2500Snackbar/Under2500SnackBar.jsx'
 import AddTransaction from './AddTransaction/AddTransaction.jsx'
 import RaisedButton from './CustomButtons/RaisedButton'
+import DatePickers from './DatePickers/DatePickers'
+import TimePickers from './DatePickers/TimePickers'
 export {
     // Cards
     ChartCard, ProfileCard, RegularCard, StatsCard, TasksCard,
@@ -106,5 +108,5 @@ export {
     // Typography
     P, Quote, Muted, Primary, Info, Success, Warning, Danger, Small, A,
 
-    Under2500SnackBar , AddTransaction , RaisedButton
+    Under2500SnackBar , AddTransaction , RaisedButton , DatePickers , TimePickers
 };

@@ -25,7 +25,7 @@ class ProfileCard extends React.Component{
                         avatar: classes.cardAvatar,
                     }}
                     avatar={
-                        <img src={this.state.avatar} alt="..." className={classes.img} onError={()=>{this.setState({avatar:Noimg})}}/>
+                        <img src={avatar} className={classes.img}/>
                     }
                 />
                 <CardContent className={classes.textAlign}>

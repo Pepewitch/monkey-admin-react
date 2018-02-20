@@ -24,29 +24,43 @@ class UserProfile extends React.Component{
         this.state = {query : queryString.parse(this.props.location.search) , loading:true , editloading:false}
         this.selectRow = this.selectRow.bind(this)
         this.handleEditActivity = this.handleEditActivity.bind(this)
+        this.fetchTransaction = this.fetchTransaction.bind(this)
     }
     selectRow(e,eachRow,remark){
-        for(let i in this.allpic){
-            if((eachRow[0]+'')===this.allpic[i].split('.')[0]){
-                this.setState({loading:true,profilepic:this.allpic[i]})
-                break
+        this.fetchQueryData(eachRow[0],eachRow[1])
+        this.fetchTransaction(eachRow[0],eachRow[1])
+    }
+    fetchQueryData(studentID,subject,checkpic){
+        if(!checkpic){
+            for(let i in this.allpic){
+                if((studentID+'')===this.allpic[i].split('.')[0]){
+                    this.setState({loading:true,profilepic:this.allpic[i]})
+                    break
+                }
             }
         }
+        let fetchComplete = false
         fetch(global.postlink+'/post/studentProfile',{
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
-            body:serialize({studentID:eachRow[0]})
+            body:serialize({studentID:studentID})
         }).then(data=>data.json()).then(data=>{
-            data.subject = eachRow[1]
-            this.setState({profile:data , query:{id:eachRow[0],subject:eachRow[1]}})
+            if(!fetchComplete){
+                fetchComplete = true
+                data.subject = subject
+                this.setState({profile:data , query:{id:studentID,subject:subject}})
+            }
         })
-        this.fetchTransaction(eachRow[0],eachRow[1])
-        
+        setTimeout(()=>{
+            if(!fetchComplete){
+                fetchComplete = true
+                this.fetchQueryData(studentID,subject,true)
+            }
+        },2000)
     }
-
     fetchTransaction(studentID , subject){
         let fetchComplete = false;
         fetch(global.postlink+'/post/v1/getTransactionFHB',{
@@ -73,39 +87,54 @@ class UserProfile extends React.Component{
         },3000)
     }
 
-    fetchInitialData(){
+    fetchInitialData(callback){
         let fetchComplete = false;
         fetch('https://www.monkey-monkey.com/post/v1/allstudentProfilePicture',{method:'post'}).then(data=>{return data.json()}).then(data=>{
             if(!fetchComplete){
+                fetchComplete = true
                 this.allpic = data.arr
-                fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
-                    if(!fetchComplete){
-                        fetchComplete = true
-                        this.setState({
-                            allstudent:data.transactionArr.map((each)=>{
-                                let date = new Date(each.lastUpdate)
-                                let day = date.toLocaleDateString().split('/')
-                                return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
-                            }),
-                            loading :false
-                        })
-                    }
+                if(callback)callback()
+            }
+        })
+        setTimeout(()=>{
+            if(!fetchComplete) {
+                fetchComplete = true;
+                this.fetchInitialData(callback)
+            }
+        },2000)
+    }
+    componentDidMount(){
+        setTimeout(()=>{
+            let query = queryString.parse(this.props.location.search)
+            this.fetchInitialData(this.props.location.search?()=>{this.fetchQueryData(query.id,query.subject)}:null)
+            this.fetchAllStudent()
+            if(this.props.location.search){
+                this.fetchTransaction(query.id,query.subject)
+            }
+        },200)
+    }
+    fetchAllStudent(){
+        let fetchComplete = false
+        fetch(global.postlink+'/post/v1/getTotalTransactionFHB',{method:'post'}).then(data=>{return data.json()}).then(data=>{
+            if(!fetchComplete){
+                fetchComplete = true
+                this.setState({
+                    allstudent:data.transactionArr.map((each)=>{
+                        let date = new Date(each.lastUpdate)
+                        let day = date.toLocaleDateString().split('/')
+                        return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
+                    }),
+                    loading :false
                 })
             }
         })
         setTimeout(()=>{
             if(!fetchComplete) {
                 fetchComplete = true;
-                this.fetchInitialData()
+                this.fetchAllStudent()
             }
         },2000)
     }
-    componentDidMount(){
-        setTimeout(()=>{
-            this.fetchInitialData()
-        },200)
-    }
-
     handleEditActivity(id){
         let value = document.getElementById(id+'value').value
         let reason = document.getElementById(id+'reason').value
@@ -142,6 +171,7 @@ class UserProfile extends React.Component{
             this.fetchTransaction(this.state.query.id , this.state.query.subject)
         })
     }
+
     render(){
         return (
             <div className={"userview"}>
@@ -159,28 +189,31 @@ class UserProfile extends React.Component{
                             // cardSubtitle="Complete your profile"
                             content={
                                 <div>
-                                    {this.state.loading?
+                                    {!this.state.activity?
                                     <div align="center"><CircularProgress size={80} style={{margin:"20px"}} color="secondary"/></div>
                                     :
                                     <div className={"under2500info"}>
-                                        <ExpansionPanel disabled style={{background:'white' , width:'100%'}}>
+                                        <ExpansionPanel style={{width:'100%'}}>
                                             <ExpansionPanelSummary>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"black"}}>Date</label></div>
+                                                <div align="center"><label style={{color:"grey"}}>Date</label></div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"black"}}>Time</label></div>
+                                                <div align="center"><label style={{color:"grey"}}>Time</label></div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"black"}}>Value</label></div>
+                                                <div align="center"><label style={{color:"grey"}}>Value</label></div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"black"}}>Balance</label></div>
+                                                <div align="center"><label style={{color:"grey"}}>Balance</label></div>
                                                 </ItemGrid>
                                                 <ItemGrid md={4}>
-                                                <div align="center"><label style={{color:"black"}}>Reason</label></div>
+                                                <div align="center"><label style={{color:"grey"}}>Reason</label></div>
                                                 </ItemGrid>
                                             </ExpansionPanelSummary>
+                                            <ExpansionPanelDetails>
+                                                <AddTransaction studentID={this.state.query.id} subject={this.state.query.subject} fetchTransaction={this.fetchTransaction}/>
+                                            </ExpansionPanelDetails>
                                         </ExpansionPanel>
                                         {
                                             this.state.activity.map((eachRow,key) => {
@@ -222,17 +255,6 @@ class UserProfile extends React.Component{
                                                 </ExpansionPanel>
                                             })
                                         }
-                                        <ExpansionPanel>
-                                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                                            <Typography>Expansion Panel 2</Typography>
-                                            </ExpansionPanelSummary>
-                                            <ExpansionPanelDetails>
-                                            <Typography>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                                                sit amet blandit leo lobortis eget.
-                                            </Typography>
-                                            </ExpansionPanelDetails>
-                                        </ExpansionPanel>
                                     </div>
                                     }
                                 </div>
@@ -241,18 +263,20 @@ class UserProfile extends React.Component{
                     </ItemGrid>
                     <ItemGrid xs={12} sm={12} md={4}>
                         <ProfileCard
-                            avatar={"https://www.monkey-monkey.com/profile/"+this.state.profilepic}
+                            avatar={this.state.profilepic?"https://www.monkey-monkey.com/profile/"+this.state.profilepic:""}
                             // title={}
                             content={
+                                this.state.profile?
                                 <FormControl>
                                     <FormGroup>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"StudentID :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.query.id}</label>}/>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Name :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname}</label>}/>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Level :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.level}</label>}/>
                                         <FormControlLabel control={<label style={{color:"black"}}>{"Subject :"}&nbsp;</label>} label={<label style={{color:"black"}}>{global.subject[this.state.profile.subject[0]]}</label>}/>
-                                        <AddTransaction/>
                                     </FormGroup>
                                 </FormControl>
+                                :
+                                <div align="center"><CircularProgress size={100} style={{margin:"20px"}} color="primary"/></div>
                             }
                                 // (this.state.profile?(this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname):"")}
                             // footer={
