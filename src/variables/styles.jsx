@@ -150,8 +150,8 @@ const appStyle = theme => ({
         width: '100%',
     },
     content: {
-        marginTop: '70px',
-        padding: '30px 15px',
+        marginTop: '20px',
+        padding: '20px 15px',
         minHeight: 'calc(100% - 123px)',
     },
     container,
@@ -372,9 +372,9 @@ const sidebarStyle = theme => ({
 const headerStyle = theme => ({
     appBar: {
         top: '-30px',
-        [theme.breakpoints.down('md')]:{
-            top: '-15px'
-        },
+        // [theme.breakpoints.down('md')]:{
+        //     top: '-15px'
+        // },
         backgroundColor: 'transparent',
         boxShadow: 'none',
         borderBottom: '0',
@@ -466,7 +466,6 @@ const headerLinksStyle = theme => ({
         fontSize: '14px',
     },
     buttonLink: {
-        top: '-6px',
         [theme.breakpoints.down('sm')]:{
             display: 'flex',
             marginLeft: '30px',
@@ -481,7 +480,6 @@ const headerLinksStyle = theme => ({
         }
     },
     top: {
-        top: '-6px',
         zIndex: '4',
     },
     searchIcon:{
@@ -515,7 +513,6 @@ const headerLinksStyle = theme => ({
             borderRadius: '10px',
             textAlign: 'center',
             lineHeight: '16px',
-            verticalAlign: 'middle',
             display: 'block',
         },
         [theme.breakpoints.down('sm')]:{

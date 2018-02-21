@@ -4,7 +4,7 @@ import {
     Menu
 } from 'material-ui-icons';
 import {
-    withStyles, AppBar, Toolbar, IconButton, Hidden, Button,
+    withStyles, AppBar, Toolbar, IconButton, Hidden, Button,Typography,GridList
 } from 'material-ui';
 
 import { headerStyle } from 'variables/styles';
@@ -24,17 +24,18 @@ class Header extends React.Component{
     }
     render(){
         const { classes, color } = this.props;
+        console.log(this.props.location)
         return (
-            <AppBar className={classes.appBar + (color !== undefined ? " " + classes[color]:"")}>
-                <Toolbar className={classes.container}>
-                    <div className={classes.flex}>
-                        {/* Here we create navbar brand, based on route name */}
-                        <Button href="#" className={classes.title}>{this.makeBrand()}</Button>
-                    </div>
-                    <Hidden smDown implementation="css">
-                        <HeaderLinks />
-                    </Hidden>
-                    <Hidden mdUp>
+            <div className={classes.root}>
+            <AppBar position="static" color="default">
+              <Toolbar>
+                <Typography variant="title" color="inherit" style={{fontSize:"20px"}}>
+                    {this.props.location.pathname.slice(1).toUpperCase()}
+                </Typography>
+                <Hidden smDown>
+                    <HeaderLinks/>
+                </Hidden>
+                <Hidden mdUp>
                         <IconButton
                             className={classes.appResponsive}
                             color="inherit"
@@ -42,9 +43,10 @@ class Header extends React.Component{
                             onClick={this.props.handleDrawerToggle}>
                             <Menu />
                         </IconButton>
-                    </Hidden>
-                </Toolbar>
+                </Hidden>
+              </Toolbar>
             </AppBar>
+          </div>
         );
     }
 }

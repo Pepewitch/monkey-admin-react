@@ -274,3 +274,12 @@ footer ul li a:hover {
 	height: 42px;
 	text-align: right;
 }
+
+.searchPaper {
+    position: absolute!important;
+    z-index: 4;
+}
+.headerSearch {
+    position: absolute!important;
+    right:20px;
+}

@@ -84,6 +84,7 @@ import AddTransaction from './AddTransaction/AddTransaction.jsx'
 import RaisedButton from './CustomButtons/RaisedButton'
 import DatePickers from './DatePickers/DatePickers'
 import TimePickers from './DatePickers/TimePickers'
+import IntegrationDownshift from './IntegrationDownshift/IntegrationDownshift'
 export {
     // Cards
     ChartCard, ProfileCard, RegularCard, StatsCard, TasksCard,
@@ -108,5 +109,5 @@ export {
     // Typography
     P, Quote, Muted, Primary, Info, Success, Warning, Danger, Small, A,
 
-    Under2500SnackBar , AddTransaction , RaisedButton , DatePickers , TimePickers
+    Under2500SnackBar , AddTransaction , RaisedButton , DatePickers , TimePickers , IntegrationDownshift
 };
