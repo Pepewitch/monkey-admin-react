@@ -122,7 +122,8 @@ class UserProfile extends React.Component{
                     allstudent:data.transactionArr.map((each)=>{
                         let date = new Date(each.lastUpdate)
                         let day = date.toLocaleDateString().split('/')
-                        return [each.studentID,each.subject,(day[1].length>1?day[1]:('0'+day[1]))+'/'+(day[0].length>1?day[0]:('0'+day[0]))+'/'+day[2]+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
+                        let dateStr = (date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
+                        return [each.studentID,each.subject,dateStr+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
                     }),
                     loading :false
                 })
@@ -172,6 +173,10 @@ class UserProfile extends React.Component{
         })
     }
 
+    componentWillReceiveProps(nextProps){
+        window.location.reload()
+    }
+
     render(){
         return (
             <div className={"userview"}>
@@ -182,7 +187,7 @@ class UserProfile extends React.Component{
                             cardTitle={
                                 <div style={{verticalAlign:"middle"}}>
                                     <label style={{color:"white",verticalAlign:"middle"}}>Activity</label>
-                                    <Button style={{float:"right",color:'white',verticalAlign:"middle"}} onClick={()=>{this.setState({query:{},loading:true},()=>{setTimeout(()=>{this.setState({loading:false})},50)})}}>to AllStudent</Button>
+                                    <Button style={{float:"right",color:'white',verticalAlign:"middle"}} onClick={()=>{this.props.history.push('/user')}}>to AllStudent</Button>
                                 </div>
                             }
                             headerColor="blue"
@@ -217,15 +222,15 @@ class UserProfile extends React.Component{
                                         </ExpansionPanel>
                                         {
                                             this.state.activity.map((eachRow,key) => {
-                                                let dateObj = new Date(eachRow.timestamp)
-                                                let date = dateObj.toLocaleDateString().split('/')
+                                                let date = new Date(eachRow.timestamp)
+                                                let dateStr = (date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
                                                 return <ExpansionPanel key={key}>
                                                     <ExpansionPanelSummary>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{(date[1].length>1?date[1]:('0'+date[1]))+'/'+(date[0].length>1?date[0]:('0'+date[0]))+'/'+date[2]}</label></div>
+                                                        <div align="center"><label style={{color:"black"}}>{dateStr}</label></div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{dateObj.toString().split(' ')[4]}</label></div>
+                                                        <div align="center"><label style={{color:"black"}}>{date.toLocaleTimeString()}</label></div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
                                                         <div align="center"><label style={{color:"black"}}>{eachRow.value}</label></div>

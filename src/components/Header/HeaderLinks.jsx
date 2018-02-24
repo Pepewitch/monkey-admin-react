@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect,Switch} from 'react-router-dom';
 import {
     Person, Notifications, Dashboard, Search,
 } from 'material-ui-icons';
@@ -59,7 +60,9 @@ class HeaderLinks extends React.Component {
         return (
           <TextField
             {...other}
+            style={{width:'450px'}}
             inputRef={ref}
+            onKeyUp = {(e)=>{if(e.which === 13) this.props.handleSearch()}}
             InputProps={{
               ...InputProps,
             }}
@@ -84,25 +87,24 @@ class HeaderLinks extends React.Component {
             </MenuItem>
         );
     }
-    handleSearch(){
-        let search = document.getElementById("searchField")
-        console.log(search.value)
-    }
     componentDidMount() {
-        fetch(global.postlink + '/post/allStudent', { method: "POST" }).then(data => data.json()).then(data => {
-            console.log(data)
-            for (let i = 0; i < data.student.length; i++) data.student[i].label = data.student[i].studentID + ' : ' + data.student[i].firstname + '(' + data.student[i].nickname + ')'
-            this.setState({ searchData: data.student })
-        })
+        if(this.state.searchData.length===0)
+            fetch(global.postlink + '/post/allStudent', { method: "POST" }).then(data => data.json()).then(data => {
+                console.log(data)
+                for (let i = 0; i < data.student.length; i++) data.student[i].label = data.student[i].studentID + ' : ' + data.student[i].firstname + '(' + data.student[i].nickname + ')'
+                this.setState({ searchData: data.student })
+            })
     }
 
     render() {
         const { classes } = this.props;
         const { open } = this.state;
         return (
+            this.state.search?<Redirect exact push to={{pathname:'/users',search:this.state.search}}/>
+            :
             <div className="headerSearch">
                 <FormControl>
-                    <Downshift onSelect={(selectedItem)=>{this.handleSearch()}}>
+                    <Downshift>
                         {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => {
                             return (
                                 <div>

@@ -16,8 +16,9 @@ const styles = theme => ({
 
 function DatePickers(props) {
   const { classes } = props;
-  let date = (new Date()).toLocaleDateString().split('/')
-  let dateStr = date[2]+'-'+(date[0].length>1?date[0]:('0'+date[0]))+'-'+(date[1].length>1?date[1]:('0'+date[1]))
+  let date = new Date()
+  let dateStr = date.getFullYear()+'-'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'-'+(date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))
+  console.log(dateStr)
   return (
     <form className={classes.container} noValidate>
       <TextField

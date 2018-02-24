@@ -11,13 +11,12 @@ import {
 // creates a beautiful scrollbar
 import PerfectScrollbar from 'perfect-scrollbar';
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-
+import {global} from 'variables/general';
 import {
     Header, Footer, Sidebar
 } from 'components';
 
 import appRoutes from 'routes/app.jsx';
-
 import { appStyle } from 'variables/styles';
 
 import image from 'assets/img/sidebar-1.jpg';
@@ -38,9 +37,22 @@ const switchRoutes = (<Switch>
 </Switch>);
 
 class App extends React.Component{
-    state = {
-        mobileOpen: false,
-    };
+    constructor(props){
+        super(props);
+        this.state = {
+            mobileOpen: false,
+        };
+        this.handleSearch = this.handleSearch.bind(this);
+    }
+    handleSearch(){
+        let search = document.getElementById("searchField").value
+        if(search.length === 6){
+            // this.props.history.push('/user?id='+search.slice(0,5)+'&subject='+global.keySubject[parseInt(search[5])])
+        }else if(search.length === 5){
+            this.props.history.push({pathname:'/user',search:'?id='+search.slice(0,5)+'&subject=Math'})
+            this.forceUpdate()
+        }
+    }
     handleDrawerToggle = () => {
         this.setState({ mobileOpen: !this.state.mobileOpen });
     };
@@ -76,12 +88,14 @@ class App extends React.Component{
                         routes={appRoutes}
                         handleDrawerToggle={this.handleDrawerToggle}
                         {...rest}
+                        handleSearch={this.handleSearch}
                     />
                     {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
                     {
                         this.getRoute() ?(
                                 <div className={classes.content}>
                                     <div className={classes.container}>
+                                        {/* {this.state.search?<Redirect to={{pathname:'/user',search:this.state.search}}/>:null} */}
                                         {switchRoutes}
                                     </div>
                                 </div>

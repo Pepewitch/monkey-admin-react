@@ -24,16 +24,15 @@ class Header extends React.Component{
     }
     render(){
         const { classes, color } = this.props;
-        console.log(this.props.location)
         return (
             <div className={classes.root}>
-            <AppBar position="static" color="default">
+            <AppBar position="static" color="white">
               <Toolbar>
                 <Typography variant="title" color="inherit" style={{fontSize:"20px"}}>
                     {this.props.location.pathname.slice(1).toUpperCase()}
                 </Typography>
                 <Hidden smDown>
-                    <HeaderLinks/>
+                    <HeaderLinks handleSearch={this.props.handleSearch}/>
                 </Hidden>
                 <Hidden mdUp>
                         <IconButton

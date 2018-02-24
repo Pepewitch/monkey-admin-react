@@ -278,6 +278,7 @@ footer ul li a:hover {
 .searchPaper {
     position: absolute!important;
     z-index: 4;
+    width: 450px;
 }
 .headerSearch {
     position: absolute!important;
