@@ -284,3 +284,14 @@ footer ul li a:hover {
     position: absolute!important;
     right:20px;
 }
+
+.manageBtn {
+    background-color:rgba(0, 0, 0, 0.02)!important;
+    font-size: 30px!important;
+    color: rgba(0, 0, 0, 0.8)!important;
+    font-family: THSarabun!important;
+}
+
+.manageBtn:hover {
+    background-color:rgba(0, 0, 0, 0.06)!important;
+}

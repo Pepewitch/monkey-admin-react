@@ -8,10 +8,11 @@ import { iconButtonStyle } from 'variables/styles';
 
 class IconCustomButton extends React.Component{
     render(){
-        const { classes, color, children, customClass, ...rest } = this.props ;
+        const { classes, color, children, customClass, onClick , ...rest } = this.props ;
         return (
             <IconButton
                 {...rest}
+                onClick={onClick}
                 className={classes.button + ( color ? " " + classes[color]:"") + ( customClass ? " " + customClass:"")}
                 >
                 {children}

@@ -47,10 +47,10 @@ class App extends React.Component{
     handleSearch(){
         let search = document.getElementById("searchField").value
         if(search.length === 6){
-            // this.props.history.push('/user?id='+search.slice(0,5)+'&subject='+global.keySubject[parseInt(search[5])])
+            this.props.history.push('/user?id='+search.slice(0,5)+'&subject='+global.keySubject[parseInt(search[5])])
         }else if(search.length === 5){
             this.props.history.push({pathname:'/user',search:'?id='+search.slice(0,5)+'&subject=Math'})
-            this.forceUpdate()
+            // this.forceUpdate()
         }
     }
     handleDrawerToggle = () => {

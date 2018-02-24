@@ -27,8 +27,9 @@ class UserProfile extends React.Component{
         this.fetchTransaction = this.fetchTransaction.bind(this)
     }
     selectRow(e,eachRow,remark){
-        this.fetchQueryData(eachRow[0],eachRow[1])
-        this.fetchTransaction(eachRow[0],eachRow[1])
+        // this.fetchQueryData(eachRow[0],eachRow[1])
+        // this.fetchTransaction(eachRow[0],eachRow[1])
+        this.props.history.push('/user?id='+eachRow[0]+'&subject='+eachRow[1])
     }
     fetchQueryData(studentID,subject,checkpic){
         if(!checkpic){
@@ -174,7 +175,9 @@ class UserProfile extends React.Component{
     }
 
     componentWillReceiveProps(nextProps){
-        window.location.reload()
+        this.props = nextProps
+        this.state = {query : queryString.parse(this.props.location.search) , loading:true , editloading:false}
+        this.componentDidMount()   
     }
 
     render(){
@@ -274,10 +277,10 @@ class UserProfile extends React.Component{
                                 this.state.profile?
                                 <FormControl>
                                     <FormGroup>
-                                        <FormControlLabel control={<label style={{color:"black"}}>{"StudentID :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.query.id}</label>}/>
-                                        <FormControlLabel control={<label style={{color:"black"}}>{"Name :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname}</label>}/>
-                                        <FormControlLabel control={<label style={{color:"black"}}>{"Level :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.level}</label>}/>
-                                        <FormControlLabel control={<label style={{color:"black"}}>{"Subject :"}&nbsp;</label>} label={<label style={{color:"black"}}>{global.subject[this.state.profile.subject[0]]}</label>}/>
+                                        <FormControlLabel disabled control={<label style={{color:"black"}}>{"StudentID :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.query.id}</label>}/>
+                                        <FormControlLabel disabled control={<label style={{color:"black"}}>{"Name :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.firstname+' ('+this.state.profile.nickname+') '+this.state.profile.lastname}</label>}/>
+                                        <FormControlLabel disabled control={<label style={{color:"black"}}>{"Level :"}&nbsp;</label>} label={<label style={{color:"black"}}>{this.state.profile.level}</label>}/>
+                                        <FormControlLabel disabled control={<label style={{color:"black"}}>{"Subject :"}&nbsp;</label>} label={<label style={{color:"black"}}>{global.subject[this.state.profile.subject[0]]}</label>}/>
                                     </FormGroup>
                                 </FormControl>
                                 :
