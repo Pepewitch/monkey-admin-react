@@ -1,11 +1,13 @@
 import React from 'react';
 import {
     TextField, Grid, Paper, Button, IconButton, FormControl, FormControlLabel, FormGroup,
-    ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, CircularProgress
+    ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
+    Select, InputLabel, MenuItem
 } from 'material-ui'
-import { ItemGrid } from 'components'
+import { ItemGrid, RegularCard } from 'components'
 import { global, serialize } from 'variables/general'
 import DeleteIcon from 'material-ui-icons/Delete'
+import Slide from 'material-ui/transitions/Slide';
 
 const btnStyle = {
 
@@ -40,8 +42,13 @@ class Manage extends React.Component {
         super(props)
         this.state = {
             data: [],
-            loading : false
+            loading: false,
+            open: false,
+            multipleSelect: false
         }
+    }
+    handleClose() {
+        this.setState({ open: false })
     }
     addStudent() {
         let barcode = document.getElementById('studentID').value
@@ -78,7 +85,7 @@ class Manage extends React.Component {
                         profile: promiseArr[1],
                         transaction: promiseArr[0]
                     })
-                    this.setState({ data: data }, () => { console.log(data) })
+                    this.setState({ data: data })
                 })
             }
         }
@@ -92,14 +99,14 @@ class Manage extends React.Component {
         }
         this.setState({ data: data })
     }
-    addTransaction(value , reason){
-        this.setState({loading : true})
-        let studentArr = this.state.data.map(data=>{
-            return {studentID : data.studentID , subject : data.subject , value : value , reason : reason , sender : 99001}
+    addTransaction(value, reason) {
+        this.setState({ loading: true })
+        let studentArr = this.state.data.map(data => {
+            return { studentID: data.studentID, subject: data.subject, value: value, reason: reason, sender: 99001 }
         })
         let promise = []
         let statedata = this.state.data
-        for(let i in studentArr){
+        for (let i in studentArr) {
             promise.push(fetch(global.postlink + '/post/v1/addTransactionFHB', {
                 method: 'POST',
                 headers: {
@@ -109,12 +116,13 @@ class Manage extends React.Component {
                 body: serialize(studentArr[i])
             }).then(d => d.json()))
         }
-        Promise.all(promise).then(data=>{
-            for(let i in data) {
-                statedata[i].transaction.total += value 
+        Promise.all(promise).then(data => {
+            for (let i in data) {
+                statedata[i].transaction.total += value
                 statedata[i].lastUpdate = value;
             }
-            this.setState({data : statedata , loading : false})
+            setTimeout(() => { this.setState({ data: statedata, loading: false }) }, 200)
+
         })
         console.log(studentArr)
     }
@@ -123,91 +131,129 @@ class Manage extends React.Component {
         return (
             <div>
                 <Grid container justify="center">
-                    <TextField id="studentID" autoFocus placeholder={"Scan a barcode"} style={{ width: '50%' , fontSize : '120%' }} autoComplete={"false"} onKeyDown={(e) => {
+                    <TextField id="studentID" autoFocus placeholder={"Scan a barcode"} style={{ width: '50%', fontSize: '120%' }} autoComplete={"false"} onKeyDown={(e) => {
                         if (e.which === 13) this.addStudent()
                     }} />
                 </Grid>
                 <Grid container style={{ padding: '20px' }} spacing={24} justify={"space-between"}>
                     <Grid item xs={6} md={8} lg={8}>
-                        <Paper style={{ padding: "20px", margin: "20px" }} >
-                            <ExpansionPanel style={{ width: '100%', background: 'white' }} disabled>
-                                <ExpansionPanelSummary >
-                                    <ItemGrid md={3}>
-                                        <div align="center"><label style={{ color: "black" }}>ID</label></div>
-                                    </ItemGrid>
-                                    <ItemGrid md={3}>
-                                        <div align="center"><label style={{ color: "black" }}>Subject</label></div>
-                                    </ItemGrid>
-                                    <ItemGrid md={3}>
-                                        <div align="center"><label style={{ color: "black" }}>Name</label></div>
-                                    </ItemGrid>
-                                    <ItemGrid md={3}>
-                                        <div align="center"><label style={{ color: "black" }}>Balance</label></div>
-                                    </ItemGrid>
-                                </ExpansionPanelSummary>
-                            </ExpansionPanel>
-                            {
-                                this.state.loading?
-                                <div align="center"><CircularProgress size={100} style={{margin:"20px"}} color="primary"/></div>
-                                :
+                        <RegularCard
+                            cardTitle={<div>{"Selected ID"}
+                                <FormControl style={{ float: 'right' }}>
+                                    <InputLabel htmlFor="controlled-open-select">Age</InputLabel>
+                                    <Select
+                                        value={10}
+                                        inputProps={{
+                                            name: 'age',
+                                            id: 'controlled-open-select',
+                                        }}
+                                    >
+                                        <MenuItem value="">
+                                            <em>None</em>
+                                        </MenuItem>
+                                        <MenuItem value={10}>Ten</MenuItem>
+                                        <MenuItem value={20}>Twenty</MenuItem>
+                                        <MenuItem value={30}>Thirty</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>}
+                            headerColor="orange"
+                            content={
                                 <div>
-                                {this.state.data.map((data, key) =>
-                                    <ExpansionPanel style={{ width: '100%' }} key={key}>
-                                        <ExpansionPanelSummary>
+                                    <ExpansionPanel style={{ width: '100%', background: 'white' }} disabled>
+                                        <ExpansionPanelSummary >
                                             <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.studentID}</label></div>
+                                                <div align="center"><label style={{ color: "black" }}>ID</label></div>
                                             </ItemGrid>
                                             <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.subject}</label></div>
+                                                <div align="center"><label style={{ color: "black" }}>Subject</label></div>
                                             </ItemGrid>
                                             <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.profile.firstname + '(' + data.profile.nickname + ')'}</label></div>
+                                                <div align="center"><label style={{ color: "black" }}>Name</label></div>
                                             </ItemGrid>
                                             <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate?(' ('+(data.lastUpdate>0?('+'+data.lastUpdate):data.lastUpdate)+')'):''}</label></div>
+                                                <div align="center"><label style={{ color: "black" }}>Balance</label></div>
                                             </ItemGrid>
                                         </ExpansionPanelSummary>
-                                        <ExpansionPanelDetails>
-                                            <div style={{ width: '100%', textAlign: 'center' }}><IconButton onClick={()=>{this.deleteBarcode(data.barcode)}}><DeleteIcon /></IconButton></div>
-                                        </ExpansionPanelDetails>
                                     </ExpansionPanel>
-                                )}
-                                </div>
-                            }
-                        </Paper>
-                        {/* {this.state.data.map((data, key) => {
-                            let barcode = data.barcode
-                            return <Paper style={{ padding: "20px", margin: "20px" }} key={key}>
-                                <IconButton style={{ float: 'right', position: 'relative', top: '0px' }} onClick={() => { this.deleteBarcode(barcode) }}><DeleteIcon /></IconButton>
-                                <div style={{ display: 'flex' }}>
-                                    <FormControl style={{margin:'20px'}}>
-                                        <FormControlLabel style={{marginTop:'10px'}} disabled control={<label style={{ color: "black" }}>{"StudentID :"}&nbsp;</label>} label={<label style={{ color: "black" }}>{data.studentID}</label>} />
-                                        <FormControlLabel style={{marginTop:'10px'}} disabled control={<label style={{ color: "black" }}>{"Name :"}&nbsp;</label>} label={<label style={{ color: "black" }}>{data.profile.firstname + ' (' + data.profile.nickname + ') ' + data.profile.lastname}</label>} />
-                                        <FormControlLabel style={{marginTop:'10px'}} disabled control={<label style={{ color: "black" }}>{"Subject :"}&nbsp;</label>} label={<label style={{ color: "black" }}>{global.subject[data.subject[0]]}</label>} />
-                                        <FormControlLabel style={{marginTop:'10px'}} disabled control={<label style={{ color: "black" }}>{"Balance :"}&nbsp;</label>} label={<label style={{ color: "black" }}>{data.transaction.total}</label>} />
-                                    </FormControl>
-                                </div>
-                            </Paper>
-                        })} */}
-                        {/* <Paper style={{alignContent:'center', padding:"20px" , margin:"20px"}}>Hello</Paper>
-                        <Paper style={{alignContent:'center', padding:"20px", margin:"20px"}}>Hello</Paper>
-                        <Paper style={{alignContent:'center', padding:"20px", margin:"20px"}}>Hello</Paper>
-                        <Paper style={{alignContent:'center', padding:"20px", margin:"20px"}}>Hello</Paper> */}
+                                    {
+                                        this.state.loading ?
+                                            <div align="center"><CircularProgress size={100} style={{ margin: "20px" }} color="primary" /></div>
+                                            :
+                                            <div>
+                                                {this.state.data.map((data, key) =>
+                                                    <Slide direction="up" in>
+                                                        <ExpansionPanel style={{ width: '100%' }} key={key}>
+                                                            <ExpansionPanelSummary>
+                                                                <ItemGrid md={3}>
+                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.studentID}</label></div>
+                                                                </ItemGrid>
+                                                                <ItemGrid md={3}>
+                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.subject}</label></div>
+                                                                </ItemGrid>
+                                                                <ItemGrid md={3}>
+                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.profile.firstname + '(' + data.profile.nickname + ')'}</label></div>
+                                                                </ItemGrid>
+                                                                <ItemGrid md={3}>
+                                                                    <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
+                                                                </ItemGrid>
+                                                            </ExpansionPanelSummary>
+                                                            <ExpansionPanelDetails>
+                                                                <div style={{ width: '100%', textAlign: 'center' }}><IconButton onClick={() => { this.deleteBarcode(data.barcode) }}><DeleteIcon /></IconButton></div>
+                                                            </ExpansionPanelDetails>
+                                                        </ExpansionPanel>
+                                                    </Slide>
+                                                )}
+                                            </div>
+                                    }
+                                </div>} />
                     </Grid>
                     <Grid item xs={6} md={4} lg={4}>
-                        <Paper style={{ padding: "20px", margin: "20px" }}>
-                            <Grid container justify={"center"}>
-                                <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={()=>{this.addTransaction(10000,'Deposit from MonkeyAdmin')}}>Deposit +10000</Button>
-                                <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={()=>{this.addTransaction(-800,'Withdraw from MonkeyAdmin')}}>Withdraw -800</Button>
-                                <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={()=>{this.addTransaction(-800,'Withdraw from MonkeyAdmin')}}>ลืมอุปกรณ์ -100</Button>
-                                <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={()=>{this.addTransaction(-800,'Absent')}}>Absent -800</Button>
-                                <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={()=>{this.setState({data:[]})}}>Clear</Button>
-                            </Grid>
+                        <RegularCard
+                            cardTitle={"Action"}
+                            headerColor="green"
+                            content={
+                                <Grid container justify={"center"}>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</Button>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Withdraw -800</Button>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>ลืมอุปกรณ์ -100</Button>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</Button>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</Button>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</Button>
+                                    <Dialog
+                                        open={this.state.open}
+                                        onClose={this.handleClose}
+                                        aria-labelledby="form-dialog-title"
+                                    >
+                                        <DialogTitle id="form-dialog-title">Create new transaction</DialogTitle>
+                                        <DialogContent>
 
-                        </Paper>
+                                            <div style={{ display: "inline-flex", padding: "10px" }}>
+                                                <TextField
+                                                    autoFocus
+                                                    id="value"
+                                                    label="Value"
+                                                />&nbsp;
+                                            <TextField
+                                                    id="reason"
+                                                    label="Reason"
+                                                />&nbsp;
+                                        </div>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={this.handleClose} color="primary">
+                                                Cancel
+                                    </Button>
+                                            <Button onClick={() => { if (document.getElementById('value').value && document.getElementById('reason').value) this.addTransaction(parseInt(document.getElementById('value').value), document.getElementById('reason').value); this.setState({ open: false }) }} color="primary">
+                                                Confirm
+                                    </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                </Grid>} />
+
                     </Grid>
                 </Grid>
-            </div>
+            </div >
         );
     }
 }
