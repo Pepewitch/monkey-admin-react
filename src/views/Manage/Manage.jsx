@@ -10,9 +10,8 @@ import DeleteIcon from 'material-ui-icons/Delete'
 import Slide from 'material-ui/transitions/Slide';
 
 const btnStyle = {
-
-    height: '100px',
-    width: '300px',
+    width: '100%',
+    height: '80px',
     boxShadow: '0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)',
     border: 'none',
     borderRadius: '3px',
@@ -46,6 +45,7 @@ class Manage extends React.Component {
             open: false,
             multipleSelect: false
         }
+        this.handleClose = this.handleClose.bind(this)
     }
     handleClose() {
         this.setState({ open: false })
@@ -54,7 +54,8 @@ class Manage extends React.Component {
         let barcode = document.getElementById('studentID').value
         document.getElementById('studentID').value = ''
         if (barcode.length === 6) {
-            let data = this.state.data
+            let data = this.state.multipleSelect?this.state.data:[]
+            if(!this.state.multipleSelect) this.setState({data:[]})
             let inArray = false;
             for (let i in data) {
                 if (data[i].barcode === barcode) inArray = true;
@@ -78,13 +79,18 @@ class Manage extends React.Component {
                         body: 'studentID=' + barcode.slice(0, 5)
                     }).then(d => d.json())
                 ]).then(promiseArr => {
-                    data.push({
-                        barcode: barcode,
-                        studentID: barcode.slice(0, 5),
-                        subject: global.keySubject[barcode[5]],
-                        profile: promiseArr[1],
-                        transaction: promiseArr[0]
-                    })
+                    if(!promiseArr[1].err){
+                        data.push({
+                            barcode: barcode,
+                            studentID: barcode.slice(0, 5),
+                            subject: global.keySubject[barcode[5]],
+                            profile: promiseArr[1],
+                            transaction: promiseArr[0]
+                        })
+                    }
+                    else{
+                        window.alert('ไม่พบ ID ที่ค้นหา')
+                    }
                     this.setState({ data: data })
                 })
             }
@@ -204,7 +210,60 @@ class Manage extends React.Component {
                                     }
                                 </div>
                                 :
-                                null
+                                <div>
+                                    {this.state.loading?
+                                        <div align="center"><CircularProgress size={100} style={{ margin: "20px" }} color="primary" /></div>
+                                        :
+                                        <div style={{width:'100%'}}>
+                                            {this.state.data.map((data,key)=>{
+                                                return <Slide direction="up" in>
+                                                <Grid container spacing={16} style={{padding:'16px'}}>
+                                                    <Grid item md={4} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'right'}}>
+                                                            StudentID :&nbsp;
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={8} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'left'}}>
+                                                            {data.studentID}
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={4} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'right',fontSize:'150%'}}>
+                                                            Name :&nbsp;
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={8} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'left',fontSize:'150%'}}>
+                                                            {data.profile.firstname+' ('+data.profile.nickname+')'}
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={4} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'right'}}>
+                                                            Subject :&nbsp;
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={8} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'left'}}>
+                                                            {data.subject}
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={4} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'right',fontSize:'150%'}}>
+                                                            Balance :&nbsp;
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={8} xs={6}>
+                                                        <div style={{width:'100%',textAlign:'left',fontSize:'150%',color:'red'}}>
+                                                            {data.transaction.total+' บาท '}{data.lastUpdate?(' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
+                                                        </div>
+                                                    </Grid>
+                                                </Grid>
+                                                </Slide>
+                                            })}
+                                        </div>
+                                    }
+                                </div>
                             }/>
                     </Grid>
                     <Grid item xs={6} md={4} lg={4}>
@@ -213,15 +272,26 @@ class Manage extends React.Component {
                             headerColor="green"
                             content={
                                 <Grid container justify={"center"}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</Button>
+                                    <Grid item md={6} sm={12}>
+                                        <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</Button>
+                                    </Grid>
+                                    <Grid item md={6} sm={12}>
                                     <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Withdraw -800</Button>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>ลืมอุปกรณ์ -100</Button>
+                                    </Grid>
+                                    <Grid item md={6} sm={12}>
+                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</Button>
+                                    </Grid>
+                                    <Grid item md={6} sm={12}>
                                     <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</Button>
+                                    </Grid>
+                                    <Grid item md={6} sm={12}>
                                     <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</Button>
+                                    </Grid>
+                                    <Grid item md={6} sm={12}>
                                     <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</Button>
+                                    </Grid>
                                     <Dialog
                                         open={this.state.open}
-                                        onClose={this.handleClose}
                                         aria-labelledby="form-dialog-title"
                                     >
                                         <DialogTitle id="form-dialog-title">Create new transaction</DialogTitle>
