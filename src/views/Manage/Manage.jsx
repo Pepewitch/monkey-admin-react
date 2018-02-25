@@ -136,6 +136,7 @@ class Manage extends React.Component {
     render() {
         return (
             <div>
+                asdsda
                 <Grid container justify="center">
                     <TextField id="studentID" autoFocus placeholder={"Scan a barcode"} style={{ width: '50%', fontSize: '120%' }} autoComplete={"false"} onKeyDown={(e) => {
                         if (e.which === 13) this.addStudent()
