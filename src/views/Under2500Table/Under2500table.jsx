@@ -13,8 +13,8 @@ class Under2500Table extends React.Component {
         super()
         this.state = {
             sbjArr: [
-                { sbj: 'Math', num: 1, color: 'blue' },
-                { sbj: 'Physics', num: 2, color: 'blue' },
+                { sbj: 'Math', num: 1, color: 'orange' },
+                { sbj: 'Physics', num: 2, color: 'purple' },
                 { sbj: 'Chemistry', num: 3, color: 'blue' },
                 { sbj: 'English', num: 4, color: 'blue' },
                 // {sbj:'Bio',num:5}

@@ -2,7 +2,7 @@ import React from 'react';
 import {
     TextField, Grid, Paper, Button, IconButton, FormControl, FormControlLabel, FormGroup,
     ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
-    Select, InputLabel, MenuItem
+    Switch
 } from 'material-ui'
 import { ItemGrid, RegularCard } from 'components'
 import { global, serialize } from 'variables/general'
@@ -140,25 +140,21 @@ class Manage extends React.Component {
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
                                 <FormControl style={{ float: 'right' }}>
-                                    <InputLabel htmlFor="controlled-open-select">Age</InputLabel>
-                                    <Select
-                                        value={10}
-                                        inputProps={{
-                                            name: 'age',
-                                            id: 'controlled-open-select',
-                                        }}
-                                    >
-                                        <MenuItem value="">
-                                            <em>None</em>
-                                        </MenuItem>
-                                        <MenuItem value={10}>Ten</MenuItem>
-                                        <MenuItem value={20}>Twenty</MenuItem>
-                                        <MenuItem value={30}>Thirty</MenuItem>
-                                    </Select>
+                                <FormControlLabel
+                                    control={
+                                    <Switch
+                                        checked={this.state.multipleSelect}
+                                        onChange={(e,c)=>{this.setState({multipleSelect:c})}}
+                                        value={1}
+                                    />
+                                    }
+                                    label={<label style={{color:'white'}}>{"Multiple Select"}</label>}
+                                />
                                 </FormControl>
                             </div>}
                             headerColor="orange"
                             content={
+                                this.state.multipleSelect?
                                 <div>
                                     <ExpansionPanel style={{ width: '100%', background: 'white' }} disabled>
                                         <ExpansionPanelSummary >
@@ -206,7 +202,10 @@ class Manage extends React.Component {
                                                 )}
                                             </div>
                                     }
-                                </div>} />
+                                </div>
+                                :
+                                null
+                            }/>
                     </Grid>
                     <Grid item xs={6} md={4} lg={4}>
                         <RegularCard
