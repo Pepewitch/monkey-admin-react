@@ -54,7 +54,7 @@ class Sidebar extends React.Component {
                 <Hidden mdUp>
                     <Drawer
                         type="temporary"
-                        anchor='right'
+                        anchor='left'
                         open={this.props.open}
                         classes={{
                             paper: classes.drawerPaper,
@@ -65,9 +65,7 @@ class Sidebar extends React.Component {
                         }}>
                         {brand}
                         <div className={classes.sidebarWrapper}>
-                            <HeaderLinks />
                             {links}
-
                         </div>
                         {
                             image !== undefined ? (<div className={classes.background} style={{backgroundImage: "url("+image+")"}} />):null

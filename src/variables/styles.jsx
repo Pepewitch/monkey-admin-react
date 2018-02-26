@@ -187,8 +187,8 @@ const sidebarStyle = theme => ({
             display: 'block',
             top: '0',
             height: '100vh',
-            right: '0',
-            left: 'auto',
+            right: 'auto',
+            left: '0',
             zIndex: '1032',
             visibility: 'visible',
             overflowY: 'visible',
@@ -196,11 +196,11 @@ const sidebarStyle = theme => ({
             textAlign: 'left',
             paddingRight: '0px',
             paddingLeft: '0',
-            WebkitTransform: `translate3d(${drawerWidth}px, 0, 0)`,
-            MozTransform: `translate3d(${drawerWidth}px, 0, 0)`,
-            OTransform: `translate3d(${drawerWidth}px, 0, 0)`,
-            MsTransform: `translate3d(${drawerWidth}px, 0, 0)`,
-            transform: `translate3d(${drawerWidth}px, 0, 0)`,
+            WebkitTransform: `translate3d(-${drawerWidth}px, 0, 0)`,
+            MozTransform: `translate3d(-${drawerWidth}px, 0, 0)`,
+            OTransform: `translate3d(-${drawerWidth}px, 0, 0)`,
+            MsTransform: `translate3d(-${drawerWidth}px, 0, 0)`,
+            transform: `translate3d(-${drawerWidth}px, 0, 0)`,
             ...transition,
         },
     },
@@ -412,7 +412,7 @@ const headerStyle = theme => ({
         }
     },
     appResponsive: {
-        top: '8px'
+        // top: '8px'
     },
     primary: {
         backgroundColor: primaryColor,
