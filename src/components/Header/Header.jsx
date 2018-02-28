@@ -40,7 +40,7 @@ class Header extends React.Component {
                         <Typography variant="title" color="inherit" style={{ fontSize: "20px" }}>
                             {this.props.location.pathname.slice(1).toUpperCase()}
                         </Typography>
-                        <Hidden smDown>
+                        <Hidden xsDown>
                             <HeaderLinks handleSearch={this.props.handleSearch} />
                         </Hidden>
                     </Toolbar>

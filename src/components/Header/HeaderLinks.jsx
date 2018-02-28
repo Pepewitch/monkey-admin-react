@@ -30,10 +30,13 @@ const searchStyle = {
 }
 
 class HeaderLinks extends React.Component {
-    state = {
-        open: false,
-        searchData: []
-    };
+    constructor(props){
+        super(props)
+        this.state = {
+            open: false,
+            searchData: []
+        };
+    }
     enter = true;
     handleClick = () => {
         this.setState({ open: !this.state.open });
@@ -58,10 +61,11 @@ class HeaderLinks extends React.Component {
     }
     renderInput(inputProps) {
         const { InputProps, classes, ref, ...other } = inputProps;
+        console.log(inputProps)
         return (
           <TextField
             {...other}
-            style={{width:'450px'}}
+            style={{width:'330px'}}
             inputRef={ref}
             onKeyUp = {(e)=>{
                 if(e.which === 13){
@@ -101,14 +105,16 @@ class HeaderLinks extends React.Component {
                 this.setState({ searchData: data.student })
             })
     }
-
+    handleSearch(){
+        this.props.handleSearch()
+    }
     render() {
         const { classes } = this.props;
         const { open } = this.state;
         return (
             <div className="headerSearch">
                 <FormControl>
-                    <Downshift onSelect={(e)=>{this.enter = false;this.props.handleSearch()}}>
+                    <Downshift onSelect={(e)=>{this.enter = false;this.props.handleSearch()}} >
                         {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => {
                             return (
                                 <div>
@@ -137,7 +143,7 @@ class HeaderLinks extends React.Component {
                         }
                     </Downshift>
                 </FormControl>
-                <SearchButton color="white" aria-label="edit" customClass={classes.top + " " + classes.searchButton} onClick={()=>{this.props.handleSearch()}}>
+                <SearchButton color="white" aria-label="edit" customClass={classes.top + " " + classes.searchButton} onClick={()=>{this.handleSearch()}}>
                     <Search className={classes.searchIcon} />
                 </SearchButton>
             </div>

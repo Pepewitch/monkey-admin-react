@@ -474,7 +474,7 @@ const headerLinksStyle = theme => ({
     },
     searchButton: {
         [theme.breakpoints.down('sm')]: {
-            top: '-50px !important',
+            // top: '-50px !important',
             marginRight: '22px',
             float: 'right'
         }

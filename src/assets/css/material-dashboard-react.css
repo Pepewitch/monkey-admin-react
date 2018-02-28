@@ -278,7 +278,7 @@ footer ul li a:hover {
 .searchPaper {
     position: absolute!important;
     z-index: 4;
-    width: 450px;
+    width: 330px;
 }
 .headerSearch {
     position: absolute!important;
@@ -294,4 +294,8 @@ footer ul li a:hover {
 
 .manageBtn:hover {
     background-color:rgba(0, 0, 0, 0.06)!important;
+}
+
+.userPanel {
+    /* -webkit-transform: translate3d(0, 0, 0);    */
 }

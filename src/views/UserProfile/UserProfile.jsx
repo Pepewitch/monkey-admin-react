@@ -227,8 +227,8 @@ class UserProfile extends React.Component{
                                             this.state.activity.map((eachRow,key) => {
                                                 let date = new Date(eachRow.timestamp)
                                                 let dateStr = (date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
-                                                return <ExpansionPanel key={key}>
-                                                    <ExpansionPanelSummary>
+                                                return <ExpansionPanel key={key} className="userPanel">
+                                                    <ExpansionPanelSummary className="userPanel">
                                                         <ItemGrid md={2}>
                                                         <div align="center"><label style={{color:"black"}}>{dateStr}</label></div>
                                                         </ItemGrid>
@@ -245,7 +245,7 @@ class UserProfile extends React.Component{
                                                         <div align="center"><label style={{color:"black"}}>{eachRow.reason}</label></div>
                                                         </ItemGrid>
                                                     </ExpansionPanelSummary>
-                                                    <ExpansionPanelDetails>
+                                                    <ExpansionPanelDetails className="userPanel">
                                                         {
                                                             this.state.editloading?
                                                             <div align="center" style={{width:"100%"}}><CircularProgress size={50} color="primary"/></div>
