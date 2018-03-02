@@ -29,6 +29,21 @@ const searchStyle = {
     backgroundClip: 'padding-box',
 }
 
+function stateReducer(state, changes) {
+    // this prevents the menu from being closed when the user
+    // selects an item with a keyboard or mouse
+    switch (changes.type) {
+      case Downshift.stateChangeTypes.mouseUp:
+        return {
+          ...changes,
+          isOpen:false,
+          inputValue:state.inputValue,
+        }
+      default:
+        return changes
+    }
+  }
+
 class HeaderLinks extends React.Component {
     constructor(props){
         super(props)
@@ -61,7 +76,6 @@ class HeaderLinks extends React.Component {
     }
     renderInput(inputProps) {
         const { InputProps, classes, ref, ...other } = inputProps;
-        console.log(inputProps)
         return (
           <TextField
             {...other}
@@ -114,7 +128,7 @@ class HeaderLinks extends React.Component {
         return (
             <div className="headerSearch">
                 <FormControl>
-                    <Downshift onSelect={(e)=>{this.enter = false;this.props.handleSearch()}} >
+                    <Downshift stateReducer={stateReducer} onSelect={(e)=>{this.enter = false;this.props.handleSearch()}}>
                         {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => {
                             return (
                                 <div>
