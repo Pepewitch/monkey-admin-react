@@ -61,18 +61,17 @@ class HeaderLinks extends React.Component {
         this.setState({ open: false });
     };
     getSuggestions(inputValue) {
-        let count = 0;
-        return this.state.searchData.filter(suggestion => {
-            const keep =
-                (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
-                count < 5;
-
-            if (keep) {
-                count += 1;
-            }
-
-            return keep;
-        });
+        let sugg = this.state.searchData.filter(suggestion => {
+            if(!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) return true;
+            else return false
+        }).sort((a,b)=>{
+            if(a.label.toLowerCase().indexOf(inputValue.toLowerCase())<b.label.indexOf(inputValue.toLowerCase())) return -1;
+            else if(a.label.toLowerCase().indexOf(inputValue.toLowerCase())>b.label.indexOf(inputValue.toLowerCase())) return 1;
+            else if(a.studentID<b.studentID) return -1
+            else if(a.studentID>b.studentID) return 1
+            else return 0
+        }).slice(0,5);
+        return sugg
     }
     renderInput(inputProps) {
         const { InputProps, classes, ref, ...other } = inputProps;
