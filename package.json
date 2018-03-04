@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "chartist": "^0.10.1",
+    "d3": "^4.13.0",
     "downshift": "^1.28.0",
     "electron-is-dev": "^0.3.0",
     "font-awesome": "^4.7.0",
@@ -23,6 +24,7 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.0",
     "react-swipeable-views": "^0.12.12",
+    "socket.io-client": "^2.0.4",
     "whatwg-fetch": "^2.0.3"
   },
   "main": "public/main.js",

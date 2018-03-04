@@ -5,7 +5,7 @@ var bugs = ['Sign contract for "What are conference organizers afraid of?"','Lin
 var website = ['Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit','Sign contract for "What are conference organizers afraid of?"'];
 var server = ['Lines From Great Russian Literature? Or E-mails From My Boss?','Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit','Sign contract for "What are conference organizers afraid of?"'];
 var global = {
-    postlink : 'http://localhost:8080',
+    postlink : 'http://192.168.1.228:8080',
     subject : {
         M:'Math',
         P:'Physics',

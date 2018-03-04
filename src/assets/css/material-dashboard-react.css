@@ -49,10 +49,10 @@
     display: -webkit-flex;
     display: flex;
 }
-
 .ct-label {
     fill: rgba(0, 0, 0, 0.4);
     line-height: 1;
+    font-size: 120%;
 }
 html * {
     -webkit-font-smoothing: antialiased;

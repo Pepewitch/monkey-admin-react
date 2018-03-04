@@ -755,7 +755,7 @@ const chartCardStyle = {
     card,
     cardHeader: {
         ...cardHeader,
-        padding: '0',
+        padding: '5px',
         minHeight: '160px',
         ...defaultFont,
     },
