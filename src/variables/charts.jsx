@@ -162,9 +162,10 @@ const completedTasksChart = {
         }
     }
 };
-
+var chartistPlugin = Chartist.plugins
 module.exports = {
     dailySalesChart,
     emailsSubscriptionChart,
-    completedTasksChart
+    completedTasksChart,
+    chartistPlugin
 };

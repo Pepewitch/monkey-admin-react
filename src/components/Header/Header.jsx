@@ -26,7 +26,7 @@ class Header extends React.Component {
         const { classes, color } = this.props;
         return (
             <div className={classes.root}>
-                <AppBar position="static" color="white">
+                <AppBar position="static" color="inherit">
                     <Toolbar>
                         <Hidden mdUp>
                             <IconButton

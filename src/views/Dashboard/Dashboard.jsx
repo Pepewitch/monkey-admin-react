@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    withStyles, Grid , Paper
+    withStyles, Grid, Paper, Table, TableHead, TableRow, TableCell, Tooltip, Button, GridList, TableBody
 } from 'material-ui';
 import {
     ContentCopy, Store, InfoOutline, Warning, DateRange, LocalOffer, Update, ArrowUpward, AccessTime, Accessibility
@@ -8,9 +8,8 @@ import {
 import PropTypes from 'prop-types';
 // react plugin for creating charts
 import ChartistGraph from 'react-chartist';
-
 import {
-    StatsCard, ChartCard, TasksCard, RegularCard, Table, ItemGrid
+    StatsCard, ChartCard, TasksCard, RegularCard, ItemGrid, DashboardDialog
 } from 'components';
 
 import {
@@ -21,7 +20,6 @@ import {
 import { dashboardStyle } from 'variables/styles';
 import { global, serialize } from 'variables/general'
 import openSocket from 'socket.io-client';
-
 const chartOption = {
     axisX: {
         showGrid: false
@@ -34,7 +32,7 @@ const chartOption = {
         bottom: 0,
         left: 0
     },
-    height:'400px'
+    height: '400px',
 }
 
 class Dashboard extends React.Component {
@@ -44,276 +42,168 @@ class Dashboard extends React.Component {
         this.socket.on('timer', (e) => console.log(e))
         this.socket.emit('subscribeToTimer')
         this.state = {
-            student: { 8: [], 10: [], 13: [], 15: [], 17: [] }
+            student: { 8: { total: [] }, 10: { total: [] }, 13: { total: [] }, 15: { total: [] }, 17: { total: [] } }
         };
     }
     componentWillUnmount() {
         this.socket.emit('discon')
     }
-    handleChange = (event, value) => {
-        this.setState({ value });
-    };
-
-    handleChangeIndex = index => {
-        this.setState({ value: index });
-    };
     componentDidMount() {
         this.updateCheckout()
         this.socket.on('updateCheckout', () => { this.updateCheckout() })
     }
-    updateCheckout() {
+    updateCheckout(d) {
+        let date = d ? d : new Date()
+        // date.setDate(4)
         fetch(global.postlink + '/post/v1/getCheckout', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
-            // body:serialize({studentID:eachRow[0] , subject:remark})
+            body: serialize({ date: date.toString() })
         }).then(data => data.json()).then(data => {
-            this.setState({ student: data })
+            let empty = true;
+            for (let i in data) if (data[i].length > 0) empty = false;
+            if (!empty) {
+                for (let i in data) {
+                    data[i].sort((a,b)=>{
+                        if(a.studentID<b.studentID) return -1;
+                        if(a.studentID==b.studentID){
+                            return 0
+                        }else return 1
+                    })
+                    let temp = {
+                        in: data[i].filter((x) => { if (!x.checkout) return true; else return false }),
+                        out: data[i].filter((x) => { if (x.checkout && !x.recheck) return true; else return false }),
+                        recheck: data[i].filter((x) => { if (x.recheck) return true; else return false }),
+                        total: data[i]
+                    }
+                    data[i] = temp
+                }
+                this.updateDate = new Date()
+                this.setState({ student: data, selectDay: date })
+            } else {
+                date.setDate(date.getDate() + 1)
+                this.updateCheckout(date)
+            }
         })
     }
     render() {
+        let time = [8, 10, 13, 15, 17]
+        let chartColor = ["green", "orange", "red", "purple", "blue"]
+        let option = ["In", "Out", "Recheck", "Total"]
+        let md = true;
+        let xorTime
+        if (this.state.student[8].total.length > 0 != this.state.student[10].total.length > 0 != this.state.student[13].total.length > 0 != this.state.student[15].total.length > 0 != this.state.student[17].total.length > 0) {
+            md = 4
+            for (let i in this.state.student) if (this.state.student[i].total.length > 0) xorTime = i
+        }
         return (
             <div>
                 <Grid container>
-                    {this.state.student[8].length > 0 ?
-                        <ItemGrid md>
-                        <ChartCard
-                            chart={
-                                <ChartistGraph
-                                    className="ct-chart"
-                                    data={{
-                                        labels:["In","Out","Recheck"],
-                                        series:[[
-                                            this.state.student[8].filter((x)=>{if(!x.checkout) return true; else return false}).length,
-                                            this.state.student[8].filter((x)=>{if(x.checkout && !x.recheck) return true; else return false}).length,
-                                            this.state.student[8].filter((x)=>{if(x.recheck) return true; else return false}).length,
-                                        ]]
-                                    }}
-                                    type="Bar"
-                                    options={chartOption}
-                                    responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                    listener={
-                                        emailsSubscriptionChart.animation
+                    {
+                        time.map((i, key) => {
+                            return this.state.student[i].total.length > 0 ?
+                                <ItemGrid md={md} key={key}>
+                                    <ChartCard
+                                        chart={
+                                            <ChartistGraph
+                                                className="ct-chart"
+                                                data={{
+                                                    labels: ["In", "Out", "Recheck"],
+                                                    series: [[
+                                                        this.state.student[i].in.length,
+                                                        this.state.student[i].out.length,
+                                                        this.state.student[i].recheck.length,
+                                                    ]]
+                                                }}
+                                                type="Bar"
+                                                options={chartOption}
+                                                responsiveOptions={emailsSubscriptionChart.responsiveOptions}
+                                            // listener={
+                                            //     emailsSubscriptionChart.animation
+                                            // }
+                                            />
+                                        }
+                                        chartColor={chartColor[key]}
+                                        title={i + ".00 น. " + this.state.selectDay.toString().split(' ').slice(0,3).join(' ')}
+                                        text={<div>
+                                            <Table>
+                                                <TableBody>
+                                                    {option.map((j, keyj) => {
+                                                        return <TableRow key={key + '' + keyj}>
+                                                            <TableCell>
+                                                                <DashboardDialog title={j + " : " + i + ".00 น"} content={
+                                                                    <Table className={"dashboardInformation"}>
+                                                                        <TableHead>
+                                                                            <TableRow>
+                                                                                <TableCell>StudentID</TableCell>
+                                                                                <TableCell>Subject</TableCell>
+                                                                                <TableCell>Name</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHead>
+                                                                        <TableBody>
+                                                                            {this.state.student[i][j.toLowerCase()].map((e) => {
+                                                                                return <TableRow key={i + '' + j + e.studentID + e.subject}>
+                                                                                    <TableCell>{e.studentID}</TableCell>
+                                                                                    <TableCell>{e.subject}</TableCell>
+                                                                                    <TableCell>{e.firstname + ' (' + e.nickname + ')'}</TableCell>
+                                                                                </TableRow>
+                                                                            })}
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                }
+                                                                    buttonText={j}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {this.state.student[i][j.toLowerCase()].length}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    })}
+                                                </TableBody>
+                                            </Table>
+                                        </div>}
+                                        statIcon={AccessTime}
+                                        statText={this.updateDate ? this.updateDate.toString() : ""}
+                                    />
+                                </ItemGrid> : null
+                        })
+                    }
+                    {
+                        md == 4 ?
+                            <ItemGrid md={8}>
+                                <RegularCard
+                                    cardTitle="Information"
+                                    headerColor="orange"
+                                    content={
+                                        <Table className={"dashboardInformation"} style={{maxHeight:'80vh' , overflow:'auto'}}>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>StudentID</TableCell>
+                                                    <TableCell>Subject</TableCell>
+                                                    <TableCell>Name</TableCell>
+                                                    <TableCell>Status</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {this.state.student[xorTime].total.map((e,key)=>{
+                                                    return <TableRow key={key}>
+                                                        <TableCell>{e.studentID}</TableCell>
+                                                        <TableCell>{e.subject}</TableCell>
+                                                        <TableCell>{e.firstname+' ('+e.nickname+')'}</TableCell>
+                                                        <TableCell>{e.recheck?"recheck":e.checkout?"out":"in"}</TableCell>
+                                                        </TableRow>
+                                                })}
+                                            </TableBody>
+                                        </Table>
                                     }
                                 />
-                            }
-                            chartColor="green"
-                            title="8.00 น."
-                            text="Last Campaign Performance"
-                            statIcon={AccessTime}
-                            statText="campaign sent 2 days ago"
-                        />
-                        </ItemGrid> : null}
-                    {this.state.student[10].length > 0 ?
-                        <ItemGrid md>
-                            <ChartCard
-                                chart={
-                                    <ChartistGraph
-                                        className="ct-chart"
-                                        data={{
-                                            labels:["In","Out","Recheck"],
-                                            series:[[
-                                                this.state.student[10].filter((x)=>{if(!x.checkout) return true; else return false}).length,
-                                                this.state.student[10].filter((x)=>{if(x.checkout && !x.recheck) return true; else return false}).length,
-                                                this.state.student[10].filter((x)=>{if(x.recheck) return true; else return false}).length,
-                                            ]]
-                                        }}
-                                        type="Bar"
-                                        options={chartOption}
-                                        responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                        listener={
-                                            emailsSubscriptionChart.animation
-                                        }
-                                    />
-                                }
-                                chartColor="orange"
-                                title="10.00 น."
-                                text="Last Campaign Performance"
-                                statIcon={AccessTime}
-                                statText="campaign sent 2 days ago"
-                            />
-                        </ItemGrid> : null}
-                    {this.state.student[13].length > 0 ?
-                        <ItemGrid md>
-                            <ChartCard
-                                chart={
-                                    <ChartistGraph
-                                        className="ct-chart"
-                                        data={{
-                                            labels:["In","Out","Recheck"],
-                                            series:[[
-                                                this.state.student[13].filter((x)=>{if(!x.checkout) return true; else return false}).length,
-                                                this.state.student[13].filter((x)=>{if(x.checkout && !x.recheck) return true; else return false}).length,
-                                                this.state.student[13].filter((x)=>{if(x.recheck) return true; else return false}).length,
-                                            ]]
-                                        }}
-                                        type="Bar"
-                                        options={chartOption}
-                                        responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                        listener={
-                                            emailsSubscriptionChart.animation
-                                        }
-                                    />
-                                }
-                                chartColor="red"
-                                title="13.00 น."
-                                text="Last Campaign Performance"
-                                statIcon={AccessTime}
-                                statText="campaign sent 2 days ago"
-                            />
-                        </ItemGrid> : null}
-                    {this.state.student[15].length > 0 ?
-                        <ItemGrid md>
-                            <ChartCard
-                                chart={
-                                    <ChartistGraph
-                                        className="ct-chart"
-                                        data={{
-                                            labels:["In","Out","Recheck"],
-                                            series:[[
-                                                this.state.student[15].filter((x)=>{if(!x.checkout) return true; else return false}).length,
-                                                this.state.student[15].filter((x)=>{if(x.checkout && !x.recheck) return true; else return false}).length,
-                                                this.state.student[15].filter((x)=>{if(x.recheck) return true; else return false}).length,
-                                            ]]
-                                        }}
-                                        type="Bar"
-                                        options={chartOption}
-                                        responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                        listener={
-                                            emailsSubscriptionChart.animation
-                                        }
-                                    />
-                                }
-                                chartColor="blue"
-                                title="15.00 น."
-                                text="Last Campaign Performance"
-                                statIcon={AccessTime}
-                                statText="campaign sent 2 days ago"
-                            />
-                        </ItemGrid> : null}
-                    {this.state.student[17].length > 0 ?
-                        <ItemGrid md>
-                            <ChartCard
-                                chart={
-                                    <ChartistGraph
-                                        className="ct-chart"
-                                        data={{
-                                            labels:["In","Out","Recheck"],
-                                            series:[[
-                                                this.state.student[17].filter((x)=>{if(!x.checkout) return true; else return false}).length,
-                                                this.state.student[17].filter((x)=>{if(x.checkout && !x.recheck) return true; else return false}).length,
-                                                this.state.student[17].filter((x)=>{if(x.recheck) return true; else return false}).length,
-                                            ]]
-                                        }}
-                                        type="Bar"
-                                        options={chartOption}
-                                        responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                        listener={
-                                            emailsSubscriptionChart.animation
-                                        }
-                                    />
-                                }
-                                chartColor="purple"
-                                title="17.00 น."
-                                text="Last Campaign Performance"
-                                statIcon={AccessTime}
-                                statText="campaign sent 2 days ago"
-                            />
-                        </ItemGrid> : null}
+                            </ItemGrid>
+                            : null
+                    }
                 </Grid>
-                {/* <Grid container>
-                    <ItemGrid xs={12} sm={12} md={4}>
-                        <ChartCard
-                            chart={
-                                <ChartistGraph
-                                    className="ct-chart"
-                                    data={dailySalesChart.data}
-                                    type="Line"
-                                    options={dailySalesChart.options}
-                                    listener={
-                                        dailySalesChart.animation
-                                    }
-                                />
-                            }
-                            chartColor="green"
-                            title="Daily Sales"
-                            text={
-                                <span>
-                                    <span className={this.props.classes.successText}><ArrowUpward className={this.props.classes.upArrowCardCategory}/> 55%</span> increase in today sales.
-                                </span>
-                            }
-                            statIcon={AccessTime}
-                            statText="updated 4 minutes ago"
-                        />
-                    </ItemGrid>
-                    <ItemGrid xs={12} sm={12} md={4}>
-                        <ChartCard
-                            chart={
-                                <ChartistGraph
-                                    className="ct-chart"
-                                    data={emailsSubscriptionChart.data}
-                                    type="Bar"
-                                    options={emailsSubscriptionChart.options}
-                                    responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                                    listener={
-                                        emailsSubscriptionChart.animation
-                                    }
-                                />
-                            }
-                            chartColor="orange"
-                            title="Email Subscriptions"
-                            text="Last Campaign Performance"
-                            statIcon={AccessTime}
-                            statText="campaign sent 2 days ago"
-                        />
-                    </ItemGrid>
-                    <ItemGrid xs={12} sm={12} md={4}>
-                        <ChartCard
-                            chart={
-                                <ChartistGraph
-                                    className="ct-chart"
-                                    data={completedTasksChart.data}
-                                    type="Line"
-                                    options={completedTasksChart.options}
-                                    listener={
-                                        completedTasksChart.animation
-                                    }
-                                />
-                            }
-                            chartColor="red"
-                            title="Completed Tasks"
-                            text="Last Campaign Performance"
-                            statIcon={AccessTime}
-                            statText="campaign sent 2 days ago"
-                        />
-                    </ItemGrid>
-                </Grid>
-                <Grid container>
-                    <ItemGrid xs={12} sm={12} md={6}>
-                        <TasksCard />
-                    </ItemGrid>
-                    <ItemGrid xs={12} sm={12} md={6}>
-                        <RegularCard
-                            headerColor="orange"
-                            cardTitle="Employees Stats"
-                            cardSubtitle="New employees on 15th September, 2016"
-                            content={
-                                <Table
-                                    tableHeaderColor="warning"
-                                    tableHead={['ID','Name','Salary','Country']}
-                                    tableData={[
-                                        [ '1' , "Dakota Rice" , "$36,738" , "Niger"] ,
-                                        [ '2' , "Minerva Hooper" , "$23,789" , "Curaçao" ] ,
-                                        [ '3' , "Sage Rodriguez" , "$56,142" , "Netherlands" ] ,
-                                        [ '4' , "Philip Chaney" , "$38,735" , "Korea, South" ] ,
-                                    ]}
-                                />
-                            }
-                        />
-                    </ItemGrid>
-                </Grid> */}
             </div>
         );
     }

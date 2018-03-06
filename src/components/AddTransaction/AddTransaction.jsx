@@ -102,7 +102,7 @@ export default class AddTransaction extends React.Component {
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Create new transaction</DialogTitle>
+          <DialogTitle id="form-dialog-title">Create a new transaction</DialogTitle>
           <DialogContent>
             {/* <DialogContentText>
               To subscribe to this website, please enter your email address here. We will send

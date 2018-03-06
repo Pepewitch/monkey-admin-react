@@ -771,13 +771,14 @@ const chartCardStyle = {
         marginTop: '0',
         marginBottom: '5px',
         ...defaultFont,
-        fontSize: '1.175em',
+        fontSize: '1.5em',
     },
     cardCategory: {
         marginBottom: '0',
-        color: grayColor,
+        // color: grayColor,
         ...defaultFont,
-        fontSize: '0.9em',
+        // textAlign: 'right',
+        fontSize: '1em',
     },
     cardActions:{
         ...cardActions,

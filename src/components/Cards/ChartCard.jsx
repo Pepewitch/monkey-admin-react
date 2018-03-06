@@ -21,9 +21,9 @@ class ChartCard extends React.Component{
                     <Typography type="title" component="h4" className={classes.cardTitle}>
                         {title}
                     </Typography>
-                    <Typography component="p" className={classes.cardCategory}>
+                    {/* <Typography component="p" className={classes.cardCategory}> */}
                         {text}
-                    </Typography>
+                    {/* </Typography> */}
                 </CardContent>
                 <CardActions className={classes.cardActions}>
                     <div className={classes.cardStats}>

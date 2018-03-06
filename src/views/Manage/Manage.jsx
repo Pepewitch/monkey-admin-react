@@ -294,7 +294,7 @@ class Manage extends React.Component {
                                         open={this.state.open}
                                         aria-labelledby="form-dialog-title"
                                     >
-                                        <DialogTitle id="form-dialog-title">Create new transaction</DialogTitle>
+                                        <DialogTitle id="form-dialog-title">Create a new transaction</DialogTitle>
                                         <DialogContent>
 
                                             <div style={{ display: "inline-flex", padding: "10px" }}>

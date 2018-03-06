@@ -224,11 +224,10 @@ footer ul li a:hover {
     background-color: rgba(0, 0, 0, 0.05)
 }
 @font-face { font-family: THSarabun; src: url(THSarabunBold.ttf); }
-.under2500view *{
-    font-size: 26px!important;
+.under2500view * , .dashboardInformation *{
+    font-size: 24px!important;
     font-family: THSarabun!important;
 }
-
 .under2500info {
     max-height: 60vh!important;
     overflow: auto;
