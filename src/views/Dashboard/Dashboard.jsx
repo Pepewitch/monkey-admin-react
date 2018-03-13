@@ -7,6 +7,7 @@ import {
 } from 'material-ui-icons';
 import PropTypes from 'prop-types';
 // react plugin for creating charts
+import Chartist from 'chartist';
 import ChartistGraph from 'react-chartist';
 import {
     StatsCard, ChartCard, TasksCard, RegularCard, ItemGrid, DashboardDialog
@@ -25,12 +26,16 @@ const chartOption = {
         showGrid: false
     },
     low: 0,
-    high: 50,
+    high: 40,
     chartPadding: {
         top: 0,
         right: 5,
         bottom: 0,
         left: 0
+    },
+    axisY:{
+        type : Chartist.FixedScaleAxis,
+        ticks: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45],
     },
     height: '400px',
 }
@@ -178,7 +183,8 @@ class Dashboard extends React.Component {
                                     cardTitle="Information"
                                     headerColor="orange"
                                     content={
-                                        <Table className={"dashboardInformation"} style={{maxHeight:'80vh' , overflow:'auto'}}>
+                                        <div className={"dashboardInformation"}>
+                                        <Table >
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>StudentID</TableCell>
@@ -198,6 +204,7 @@ class Dashboard extends React.Component {
                                                 })}
                                             </TableBody>
                                         </Table>
+                                        </div>
                                     }
                                 />
                             </ItemGrid>

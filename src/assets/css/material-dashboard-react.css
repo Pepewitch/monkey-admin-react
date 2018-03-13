@@ -228,6 +228,11 @@ footer ul li a:hover {
     font-size: 24px!important;
     font-family: THSarabun!important;
 }
+
+.dashboardInformation{
+    max-height: 80vh!important;
+    overflow: auto;
+}
 .under2500info {
     max-height: 60vh!important;
     overflow: auto;

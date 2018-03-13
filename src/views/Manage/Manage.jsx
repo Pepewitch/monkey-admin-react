@@ -43,7 +43,8 @@ class Manage extends React.Component {
             data: [],
             loading: false,
             open: false,
-            multipleSelect: false
+            multipleSelect: false,
+            recheck:true
         }
         this.handleClose = this.handleClose.bind(this)
     }
@@ -77,7 +78,15 @@ class Manage extends React.Component {
                             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                         },
                         body: 'studentID=' + barcode.slice(0, 5)
-                    }).then(d => d.json())
+                    }).then(d => d.json()),
+                    this.state.recheck?fetch(global.postlink + '/post/v1/recheck', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: 'studentID=' + barcode.slice(0, 5) + '&subject=' + global.keySubject[barcode[5]]
+                    }).then(d => d.json()):null,
                 ]).then(promiseArr => {
                     if(!promiseArr[1].err){
                         data.push({
@@ -145,18 +154,29 @@ class Manage extends React.Component {
                     <Grid item xs={6} md={8} lg={8}>
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
-                                <FormControl style={{ float: 'right' }}>
+                                <FormGroup row style={{ float: 'right'}}>
+                                <FormControlLabel
+                                    control={
+                                    <Switch
+                                        checked={this.state.recheck}
+                                        onChange={(e,c)=>{this.setState({recheck:c})}}
+                                        value={1}
+                                        color="secondary"
+                                    />
+                                    }
+                                    label={<label style={{color:'white'}}>{"Recheck"}</label>}
+                                />
                                 <FormControlLabel
                                     control={
                                     <Switch
                                         checked={this.state.multipleSelect}
-                                        onChange={(e,c)=>{this.setState({multipleSelect:c})}}
+                                        onChange={(e,c)=>{this.setState({multipleSelect:c,data:[]})}}
                                         value={1}
                                     />
                                     }
                                     label={<label style={{color:'white'}}>{"Multiple Select"}</label>}
                                 />
-                                </FormControl>
+                                </FormGroup>
                             </div>}
                             headerColor="orange"
                             content={

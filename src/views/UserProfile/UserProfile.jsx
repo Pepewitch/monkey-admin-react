@@ -60,7 +60,7 @@ class UserProfile extends React.Component{
                 fetchComplete = true
                 this.fetchQueryData(studentID,subject,true)
             }
-        },2000)
+        },4000)
     }
     fetchTransaction(studentID , subject){
         let fetchComplete = false;
@@ -85,7 +85,7 @@ class UserProfile extends React.Component{
                 fetchComplete = true;
                 this.fetchTransaction(studentID,subject)
             }
-        },3000)
+        },4000)
     }
 
     fetchInitialData(callback){
@@ -102,7 +102,7 @@ class UserProfile extends React.Component{
                 fetchComplete = true;
                 this.fetchInitialData(callback)
             }
-        },2000)
+        },4000)
     }
     componentDidMount(){
         setTimeout(()=>{
@@ -135,7 +135,7 @@ class UserProfile extends React.Component{
                 fetchComplete = true;
                 this.fetchAllStudent()
             }
-        },2000)
+        },4000)
     }
     handleEditActivity(id){
         let value = document.getElementById(id+'value').value
