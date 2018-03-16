@@ -21,3 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 //node_modules
 /build
+/dist
+/Monkey Admin-win32-x64
+index.js

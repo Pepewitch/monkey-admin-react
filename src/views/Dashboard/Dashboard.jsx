@@ -68,6 +68,7 @@ class Dashboard extends React.Component {
             },
             body: serialize({ date: date.toString() })
         }).then(data => data.json()).then(data => {
+            console.log(data)
             let empty = true;
             for (let i in data) if (data[i].length > 0) empty = false;
             if (!empty) {
@@ -100,7 +101,9 @@ class Dashboard extends React.Component {
         let option = ["In", "Out", "Recheck", "Total"]
         let md = true;
         let xorTime
-        if (this.state.student[8].total.length > 0 != this.state.student[10].total.length > 0 != this.state.student[13].total.length > 0 != this.state.student[15].total.length > 0 != this.state.student[17].total.length > 0) {
+        let showCount = 0
+        for(let i in time) if(this.state.student[time[i]].total.length>0) showCount++
+        if (showCount == 1) {
             md = 4
             for (let i in this.state.student) if (this.state.student[i].total.length > 0) xorTime = i
         }

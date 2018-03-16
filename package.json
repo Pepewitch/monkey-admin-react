@@ -1,7 +1,21 @@
 {
   "name": "monkey-admin-react",
+  "productName" : "Monkey Admin",
   "version": "0.1.0",
+  "description":"coding by react framework",
   "private": true,
+  "author": "Witch",
+  "license": "MONKEY-MONKEY",
+  "build":{
+    "appId": "com.example.electron-cra",
+    "files": [
+	    "build/**/*",
+	    "node_modules/**/*"
+	],
+	"directories":{
+	    "buildResources": "assets"
+	}
+  },
   "dependencies": {
     "chartist": "^0.10.1",
     "d3": "^4.13.0",
@@ -27,16 +41,22 @@
     "socket.io-client": "^2.0.4",
     "whatwg-fetch": "^2.0.3"
   },
-  "main": "public/main.js",
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "electron-dev": "concurrently \"npm start \" \"wait-on http://localhost:3000 && electron .\""
+    "electron-dev": "concurrently \"npm start \" \"wait-on http://localhost:3000 && electron .\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "electron-pack": "build --config.extraMetadata.main=build/electron.js"
   },
   "devDependencies": {
     "electron": "^1.8.2"
-  }
+  },
+  "postinstall": "electron-builder install-app-deps",
+  "preelectron-pack": "yarn build",
+  "homepage": "./"
 }
