@@ -71,7 +71,7 @@ class Under2500Table extends React.Component {
     }
     render() {
         return (
-            <div className={"under2500view"}>
+            <div>
                 <Grid container onClick={() => { if (this.state.open) { this.setState({ open: false }) } }}>
                     {
                         this.state.sbjArr.map((obj) => {
@@ -86,6 +86,7 @@ class Under2500Table extends React.Component {
                                                 remark={obj.sbj}
                                                 handleClick={this.handleClick}
                                                 classes={{
+                                                    table:"under2500view",
                                                     tableCell: "under2500cell",
                                                     tableRow: "under2500row"
                                                 }}

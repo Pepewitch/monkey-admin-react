@@ -224,11 +224,22 @@ footer ul li a:hover {
     background-color: rgba(0, 0, 0, 0.05)
 }
 @font-face { font-family: THSarabun; src: url(THSarabunBold.ttf); }
-.under2500view * , .dashboardInformation *{
-    font-size: 24px!important;
+.under2500view *{
+    font-size: 34px!important;
+    font-family: THSarabun!important;
+}
+.fontTHSarabun {
     font-family: THSarabun!important;
 }
 
+.dashboardInformation *{
+    font-size: 34px!important;
+    font-family: THSarabun!important;
+}
+.dashboardCell {
+    padding-bottom: 20px!important;
+    padding-top: 20px!important;
+}
 .dashboardInformation{
     max-height: 80vh!important;
     overflow: auto;
@@ -244,7 +255,7 @@ footer ul li a:hover {
 }
 
 .userview *{
-    font-size: 26px!important;
+    font-size: 32px!important;
     font-family: THSarabun!important;
 }
 
@@ -291,7 +302,6 @@ footer ul li a:hover {
 
 .manageBtn {
     background-color:rgba(0, 0, 0, 0.02)!important;
-    font-size: 24px!important;
     color: rgba(0, 0, 0, 0.8)!important;
     font-family: THSarabun!important;
 }
@@ -302,4 +312,28 @@ footer ul li a:hover {
 
 .userPanel {
     /* -webkit-transform: translate3d(0, 0, 0);    */
+}
+
+.rowabsentLate *{
+    color: red!important;
+}
+
+.rowadd *{
+    color: green!important;
+}
+
+.melSizeHalf * {
+    font-size: 160%;
+}
+
+.melSize * {
+    font-size: 200%!important;
+}
+
+.melSize2 * {
+    font-size: 300%!important;
+}
+
+.melSize3 * {
+    font-size: 400%!important;
 }

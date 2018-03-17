@@ -10,23 +10,22 @@ import DeleteIcon from 'material-ui-icons/Delete'
 import Slide from 'material-ui/transitions/Slide';
 
 const btnStyle = {
-    width: '100%',
-    height: '80px',
+    height: '100%',
+    width:'100%',
     boxShadow: '0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)',
     border: 'none',
     borderRadius: '3px',
     position: 'relative',
     padding: '8px 30px',
     margin: '5px 1px',
-    fontSize: '12px',
     fontWeight: '400',
-    textTransform: 'uppercase',
     letterSpacing: '0',
+    wordWrap: 'break-word',
     willChange: 'box-shadow, transform',
     transition: 'box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     lineHeight: '1.42857143',
     textAlign: 'center',
-    whiteSpace: 'nowrap',
+    // whiteSpace: 'nowrap',
     verticalAlign: 'middle',
     MsTouchAction: 'manipulation',
     touchAction: 'manipulation',
@@ -79,6 +78,14 @@ class Manage extends React.Component {
                         },
                         body: 'studentID=' + barcode.slice(0, 5)
                     }).then(d => d.json()),
+                    fetch(global.postlink + '/post/v1/getStudentQuota', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: 'studentID=' + barcode.slice(0, 5) + '&subj=' + global.keySubject[barcode[5]][0].toUpperCase()
+                    }).then(d => d.json()),
                     this.state.recheck?fetch(global.postlink + '/post/v1/recheck', {
                         method: 'POST',
                         headers: {
@@ -94,7 +101,8 @@ class Manage extends React.Component {
                             studentID: barcode.slice(0, 5),
                             subject: global.keySubject[barcode[5]],
                             profile: promiseArr[1],
-                            transaction: promiseArr[0]
+                            transaction: promiseArr[0],
+                            quota: promiseArr[2].totalQuota-promiseArr[2].usedQuota
                         })
                     }
                     else{
@@ -142,6 +150,32 @@ class Manage extends React.Component {
         console.log(studentArr)
     }
 
+    addQuota(value){
+        this.setState({ loading: true })
+        let promise = []
+        let statedata = this.state.data
+        let studentArr = this.state.data.map(data => {
+            return { studentID: data.studentID, subject: data.subject, value: value}
+        })
+        for (let i in studentArr) {
+            promise.push(fetch(global.postlink + '/post/v1/addQuota', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: serialize(studentArr[i])
+            }).then(d => d.json()))
+        }
+        Promise.all(promise).then(data => {
+            for (let i in data) {
+                statedata[i].quota += value
+            }
+            setTimeout(() => { this.setState({ data: statedata, loading: false }) }, 200)
+        })
+        console.log(studentArr)
+    }
+
     render() {
         return (
             <div>
@@ -151,7 +185,7 @@ class Manage extends React.Component {
                     }} />
                 </Grid>
                 <Grid container style={{ padding: '20px' }} spacing={24} justify={"space-between"}>
-                    <Grid item xs={6} md={8} lg={8}>
+                    <Grid item xs={6} md={6} lg={6}>
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
                                 <FormGroup row style={{ float: 'right'}}>
@@ -196,6 +230,9 @@ class Manage extends React.Component {
                                             <ItemGrid md={3}>
                                                 <div align="center"><label style={{ color: "black" }}>Balance</label></div>
                                             </ItemGrid>
+                                            <ItemGrid md={3}>
+                                                <div align="center"><label style={{ color: "black" }}>Quota</label></div>
+                                            </ItemGrid>
                                         </ExpansionPanelSummary>
                                     </ExpansionPanel>
                                     {
@@ -219,6 +256,9 @@ class Manage extends React.Component {
                                                                 <ItemGrid md={3}>
                                                                     <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
                                                                 </ItemGrid>
+                                                                <ItemGrid md={3}>
+                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.quota}</label></div>
+                                                                </ItemGrid>
                                                             </ExpansionPanelSummary>
                                                             <ExpansionPanelDetails>
                                                                 <div style={{ width: '100%', textAlign: 'center' }}><IconButton onClick={() => { this.deleteBarcode(data.barcode) }}><DeleteIcon /></IconButton></div>
@@ -238,44 +278,54 @@ class Manage extends React.Component {
                                             {this.state.data.map((data,key)=>{
                                                 return <Slide direction="up" in>
                                                 <Grid container spacing={16} style={{padding:'16px'}}>
-                                                    <Grid item md={4} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'right'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
                                                             StudentID :&nbsp;
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={8} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'left'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
                                                             {data.studentID}
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={4} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'right',fontSize:'150%'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
                                                             Name :&nbsp;
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={8} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'left',fontSize:'150%'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
                                                             {data.profile.firstname+' ('+data.profile.nickname+')'}
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={4} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'right'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
                                                             Subject :&nbsp;
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={8} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'left'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
                                                             {data.subject}
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={4} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'right',fontSize:'150%'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'300%',marginTop:'25px',textAlign:'right'}}>
                                                             Balance :&nbsp;
                                                         </div>
                                                     </Grid>
-                                                    <Grid item md={8} xs={6}>
-                                                        <div style={{width:'100%',textAlign:'left',fontSize:'150%',color:'red'}}>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'300%',marginTop:'25px',textAlign:'left',color:'red'}}>
                                                             {data.transaction.total+' บาท '}{data.lastUpdate?(' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
+                                                            Quota :&nbsp;
+                                                        </div>
+                                                    </Grid>
+                                                    <Grid item md={6} xs={6}>
+                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
+                                                            {data.quota}
                                                         </div>
                                                     </Grid>
                                                 </Grid>
@@ -286,29 +336,35 @@ class Manage extends React.Component {
                                 </div>
                             }/>
                     </Grid>
-                    <Grid item xs={6} md={4} lg={4}>
+                    <Grid item xs={6} md={6} lg={6}>
                         <RegularCard
                             cardTitle={"Action"}
                             headerColor="green"
                             content={
-                                <Grid container justify={"center"}>
-                                    <Grid item md={6} sm={12}>
-                                        <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</Button>
+                                <Grid container justify={"center"} className={"melSizeHalf"}>
+                                    <Grid item md={6}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</button>
                                     </Grid>
-                                    <Grid item md={6} sm={12}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Withdraw -800</Button>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
                                     </Grid>
-                                    <Grid item md={6} sm={12}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</Button>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
                                     </Grid>
-                                    <Grid item md={6} sm={12}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</Button>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</button>
                                     </Grid>
-                                    <Grid item md={6} sm={12}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</Button>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
                                     </Grid>
-                                    <Grid item md={6} sm={12}>
-                                    <Button className={"manageBtn"} variant="raised" style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</Button>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
+                                    </Grid>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1)}}>Increase Quota</button>
+                                    </Grid>
+                                    <Grid item md={6}>
+                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
                                     </Grid>
                                     <Dialog
                                         open={this.state.open}

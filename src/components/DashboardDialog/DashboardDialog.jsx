@@ -27,6 +27,7 @@ class DashboardDialog extends React.Component {
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}
+          maxWidth={false}
         >
           <DialogTitle>{this.props.title}</DialogTitle>
           <DialogContent>

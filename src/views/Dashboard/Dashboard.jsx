@@ -59,7 +59,6 @@ class Dashboard extends React.Component {
     }
     updateCheckout(d) {
         let date = d ? d : new Date()
-        // date.setDate(4)
         fetch(global.postlink + '/post/v1/getCheckout', {
             method: 'POST',
             headers: {
@@ -79,11 +78,14 @@ class Dashboard extends React.Component {
                             return 0
                         }else return 1
                     })
+                    let studentIn = data[i].filter(x=>x.status=='normal'||x.status=='add')
+                    let studentAbsent = data[i].filter(x=>x.status=='absent'||x.status=='absentLate')
                     let temp = {
-                        in: data[i].filter((x) => { if (!x.checkout) return true; else return false }),
-                        out: data[i].filter((x) => { if (x.checkout && !x.recheck) return true; else return false }),
-                        recheck: data[i].filter((x) => { if (x.recheck) return true; else return false }),
-                        total: data[i]
+                        in: studentIn.filter((x) => { if (!x.checkout) return true; else return false }),
+                        out: studentIn.filter((x) => { if (x.checkout && !x.recheck) return true; else return false }),
+                        recheck: studentIn.filter((x) => { if (x.recheck && x.checkout) return true; else return false }),
+                        total: studentIn,
+                        absent: studentAbsent
                     }
                     data[i] = temp
                 }
@@ -98,7 +100,7 @@ class Dashboard extends React.Component {
     render() {
         let time = [8, 10, 13, 15, 17]
         let chartColor = ["green", "orange", "red", "purple", "blue"]
-        let option = ["In", "Out", "Recheck", "Total"]
+        let option = ["In", "Out", "Recheck", "Total","Absent"]
         let md = true;
         let xorTime
         let showCount = 0
@@ -146,17 +148,30 @@ class Dashboard extends React.Component {
                                                                     <Table className={"dashboardInformation"}>
                                                                         <TableHead>
                                                                             <TableRow>
-                                                                                <TableCell>StudentID</TableCell>
-                                                                                <TableCell>Subject</TableCell>
-                                                                                <TableCell>Name</TableCell>
+                                                                                <TableCell className={"dashboardCell"}>StudentID</TableCell>
+                                                                                <TableCell className={"dashboardCell"}>Subject</TableCell>
+                                                                                <TableCell className={"dashboardCell"}>Grade</TableCell>
+                                                                                <TableCell className={"dashboardCell"}>Name</TableCell>
+                                                                                {j == 'Absent'?
+                                                                                    <TableCell className={"dashboardCell"}>Reason</TableCell>
+                                                                                :null}
+                                                                                {j == 'Absent'?
+                                                                                    <TableCell className={"dashboardCell"}>Image</TableCell>
+                                                                                :null}
                                                                             </TableRow>
                                                                         </TableHead>
                                                                         <TableBody>
                                                                             {this.state.student[i][j.toLowerCase()].map((e) => {
-                                                                                return <TableRow key={i + '' + j + e.studentID + e.subject}>
-                                                                                    <TableCell>{e.studentID}</TableCell>
-                                                                                    <TableCell>{e.subject}</TableCell>
-                                                                                    <TableCell>{e.firstname + ' (' + e.nickname + ')'}</TableCell>
+                                                                                return <TableRow key={i + '' + j + e.studentID + e.subject} className={'row'+e.status}>
+                                                                                    <TableCell className={"dashboardCell"}>{e.studentID}</TableCell>
+                                                                                    <TableCell className={"dashboardCell"}>{e.subject+' ('+e.type.toUpperCase()+')'}</TableCell>
+                                                                                    <TableCell className={"dashboardCell"}>{e.grade}</TableCell>
+                                                                                    <TableCell className={"dashboardCell"}>{e.firstname + ' (' + e.nickname + ')'}</TableCell>
+                                                                                    {j == 'Absent'?<TableCell className={"dashboardCell"}>{e.reason?e.reason:''}</TableCell>:null}
+                                                                                    {j == 'Absent'?<TableCell className={"dashboardCell"}>{e.img?<DashboardDialog title={e.studentID+' : '+e.firstname+' ('+e.nickname+')'} content={
+                                                                                        <img src={'https://www.monkey-monkey.com/adtendance/'+e.img} style={{maxWidth:'800px',maxHeight:'800px'}}/>
+                                                                                    }
+                                                                                    buttonText={"Show"}/>:""}</TableCell>:null}
                                                                                 </TableRow>
                                                                             })}
                                                                         </TableBody>

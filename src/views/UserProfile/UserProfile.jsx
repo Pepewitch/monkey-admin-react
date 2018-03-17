@@ -200,23 +200,23 @@ class UserProfile extends React.Component{
                                     {!this.state.activity?
                                     <div align="center"><CircularProgress size={80} style={{margin:"20px"}} color="secondary"/></div>
                                     :
-                                    <div className={"under2500info"}>
+                                    <div>
                                         <ExpansionPanel style={{width:'100%'}}>
                                             <ExpansionPanelSummary>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"grey"}}>Date</label></div>
+                                                <div align="center" className={"under2500info"} style={{color:"grey"}}>Date</div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"grey"}}>Time</label></div>
+                                                <div align="center" className={"under2500info"} style={{color:"grey"}}>Time</div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"grey"}}>Value</label></div>
+                                                <div align="center" className={"under2500info"} style={{color:"grey"}}>Value</div>
                                                 </ItemGrid>
                                                 <ItemGrid md={2}>
-                                                <div align="center"><label style={{color:"grey"}}>Balance</label></div>
+                                                <div align="center" className={"under2500info"} style={{color:"grey"}}>Balance</div>
                                                 </ItemGrid>
                                                 <ItemGrid md={4}>
-                                                <div align="center"><label style={{color:"grey"}}>Reason</label></div>
+                                                <div align="center" className={"under2500info"} style={{color:"grey"}}>Reason</div>
                                                 </ItemGrid>
                                             </ExpansionPanelSummary>
                                             <ExpansionPanelDetails>
@@ -230,19 +230,19 @@ class UserProfile extends React.Component{
                                                 return <ExpansionPanel key={key} className="userPanel">
                                                     <ExpansionPanelSummary className="userPanel">
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{dateStr}</label></div>
+                                                        <div align="center" className={"under2500info"} style={{color:"black"}}>{dateStr}</div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{date.toLocaleTimeString()}</label></div>
+                                                        <div align="center" className={"under2500info"} style={{color:"black"}}>{date.toLocaleTimeString()}</div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{eachRow.value}</label></div>
+                                                        <div align="center" className={"under2500info"} style={{color:"black"}}>{eachRow.value}</div>
                                                         </ItemGrid>
                                                         <ItemGrid md={2}>
-                                                        <div align="center"><label style={{color:"black"}}>{eachRow.total}</label></div>
+                                                        <div align="center" className={"under2500info"} style={{color:"black"}}>{eachRow.total}</div>
                                                         </ItemGrid>
                                                         <ItemGrid md={4}>
-                                                        <div align="center"><label style={{color:"black"}}>{eachRow.reason}</label></div>
+                                                        <div align="center" className={"under2500info"} style={{color:"black"}}>{eachRow.reason}</div>
                                                         </ItemGrid>
                                                     </ExpansionPanelSummary>
                                                     <ExpansionPanelDetails className="userPanel">
