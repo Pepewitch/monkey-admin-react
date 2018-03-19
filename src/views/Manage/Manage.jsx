@@ -342,28 +342,28 @@ class Manage extends React.Component {
                             headerColor="green"
                             content={
                                 <Grid container justify={"center"} className={"melSizeHalf"}>
-                                    <Grid item md={6}>
+                                    <Grid item md={6} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1)}}>Increase Quota</button>
                                     </Grid>
-                                    <Grid item md={6}>
+                                    <Grid item md={6}  xs={12}>
                                     <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
                                     </Grid>
                                     <Dialog
