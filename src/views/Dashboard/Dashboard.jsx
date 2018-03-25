@@ -44,8 +44,8 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.socket = openSocket(global.postlink)
-        this.socket.on('timer', (e) => console.log(e))
-        this.socket.emit('subscribeToTimer')
+        // this.socket.on('timer', (e) => console.log(e))
+        // this.socket.emit('subscribeToTimer')
         this.state = {
             student: { 8: { total: [] }, 10: { total: [] }, 13: { total: [] }, 15: { total: [] }, 17: { total: [] } }
         };
