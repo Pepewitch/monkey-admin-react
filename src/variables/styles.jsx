@@ -228,6 +228,7 @@ const sidebarStyle = theme => ({
         textAlign: 'left',
         fontWeight: '400',
         lineHeight: '30px',
+        verticalAlign: 'center',
         textDecoration: 'none',
         backgroundColor: 'transparent',
         '&,&:hover': {
@@ -242,9 +243,9 @@ const sidebarStyle = theme => ({
         marginRight: '15px',
     },
     img: {
-        width: '35px',
+        width: '30px',
         top: '22px',
-        position: 'absolute',
+        // position: 'absolute',
         verticalAlign: 'middle',
         border: '0',
     },

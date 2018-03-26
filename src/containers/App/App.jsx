@@ -19,8 +19,8 @@ import {
 import appRoutes from 'routes/app.jsx';
 import { appStyle } from 'variables/styles';
 
-import image from 'assets/img/sidebar-1.jpg';
-import logo from 'assets/img/reactlogo.png';
+import image from 'assets/img/Books.jpg';
+import logo from 'assets/img/favicon.ico';
 
 const switchRoutes = (<Switch>
 {

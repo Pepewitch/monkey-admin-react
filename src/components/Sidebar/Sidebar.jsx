@@ -45,7 +45,7 @@ class Sidebar extends React.Component {
                     <div className={classes.logoImage}>
                         <img src={logo} alt="logo" className={classes.img}/>
                     </div>
-                    {logoText}
+                    <span>{logoText}</span>
                 </a>
             </div>
         )
