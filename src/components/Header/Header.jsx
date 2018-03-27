@@ -12,7 +12,7 @@ import { headerStyle } from 'variables/styles';
 import HeaderLinks from './HeaderLinks';
 const btnStyle = {
     height: '100%',
-    width:'100%',
+    width: '100%',
     boxShadow: '0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)',
     border: 'none',
     borderRadius: '3px',
@@ -62,9 +62,14 @@ class Header extends React.Component {
                                 <Menu />
                             </IconButton>
                         </Hidden>
-                        <Tooltip id="tooltip-fab" className={classes.fab} title={"BACK"}>
-                            <Button style={btnStyle} onClick={()=>{if(this.props.history.length>0)this.props.history.goBack()}}>
+                        <Tooltip id="tooltip-fab" className={classes.fab} title={"Back"}>
+                            <Button style={btnStyle} onClick={() => { if (this.props.history.length > 0) this.props.history.goBack() }}>
                                 <i class="material-icons">&#xE314;</i>
+                            </Button>
+                        </Tooltip>
+                        <Tooltip id="tooltip-fab" className={classes.fab} title={"Forward"}>
+                            <Button style={btnStyle} onClick={() => { if (this.props.history.length > 0) this.props.history.goForward() }}>
+                                <i class="material-icons">&#xE5CC;</i>
                             </Button>
                         </Tooltip>
                         <Hidden xsDown>
