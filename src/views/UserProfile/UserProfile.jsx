@@ -123,7 +123,7 @@ class UserProfile extends React.Component{
                     allstudent:data.transactionArr.map((each)=>{
                         let date = new Date(each.lastUpdate)
                         let day = date.toLocaleDateString().split('/')
-                        let dateStr = (date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
+                        let dateStr = (date.getDate()>9?(date.getDate()):('0'+(date.getDate())))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
                         return [each.studentID,each.subject,dateStr+'  '+date.toLocaleTimeString(),each.firstname+' ('+each.nickname+') '+each.lastname,each.total]
                     }),
                     loading :false
@@ -226,7 +226,7 @@ class UserProfile extends React.Component{
                                         {
                                             this.state.activity.map((eachRow,key) => {
                                                 let date = new Date(eachRow.timestamp)
-                                                let dateStr = (date.getDate()>8?(date.getDate()+1):('0'+(date.getDate()+1)))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
+                                                let dateStr = (date.getDate()>9?(date.getDate()):('0'+(date.getDate())))+'/'+(date.getMonth()>8?(date.getMonth()+1):('0'+(date.getMonth()+1)))+'/'+date.getFullYear()
                                                 return <ExpansionPanel key={key} className="userPanel">
                                                     <ExpansionPanelSummary className="userPanel">
                                                         <ItemGrid md={2}>

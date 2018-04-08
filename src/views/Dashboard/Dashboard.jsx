@@ -137,7 +137,7 @@ class Dashboard extends React.Component {
                                             />
                                         }
                                         chartColor={chartColor[key]}
-                                        title={i + ".00 น. " + this.state.selectDay.toString().split(' ').slice(0,3).join(' ')}
+                                        title={i + ":00 " + this.state.selectDay.toString().split(' ').slice(0,3).join(' ')}
                                         text={<div>
                                             <Table>
                                                 <TableBody>

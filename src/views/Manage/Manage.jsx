@@ -11,7 +11,7 @@ import Slide from 'material-ui/transitions/Slide';
 
 const btnStyle = {
     height: '100%',
-    width:'100%',
+    width: '100%',
     boxShadow: '0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12)',
     border: 'none',
     borderRadius: '3px',
@@ -43,7 +43,8 @@ class Manage extends React.Component {
             loading: false,
             open: false,
             multipleSelect: false,
-            recheck:true
+            recheck: true,
+            openAbsent: false
         }
         this.handleClose = this.handleClose.bind(this)
     }
@@ -54,8 +55,8 @@ class Manage extends React.Component {
         let barcode = document.getElementById('studentID').value
         document.getElementById('studentID').value = ''
         if (barcode.length === 6) {
-            let data = this.state.multipleSelect?this.state.data:[]
-            if(!this.state.multipleSelect) this.setState({data:[]})
+            let data = this.state.multipleSelect ? this.state.data : []
+            if (!this.state.multipleSelect) this.setState({ data: [] })
             let inArray = false;
             for (let i in data) {
                 if (data[i].barcode === barcode) inArray = true;
@@ -86,26 +87,26 @@ class Manage extends React.Component {
                         },
                         body: 'studentID=' + barcode.slice(0, 5) + '&subj=' + global.keySubject[barcode[5]][0].toUpperCase()
                     }).then(d => d.json()),
-                    this.state.recheck?fetch(global.postlink + '/post/v1/recheck', {
+                    this.state.recheck ? fetch(global.postlink + '/post/v1/recheck', {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                         },
                         body: 'studentID=' + barcode.slice(0, 5) + '&subject=' + global.keySubject[barcode[5]]
-                    }).then(d => d.json()):null,
+                    }).then(d => d.json()) : null,
                 ]).then(promiseArr => {
-                    if(!promiseArr[1].err){
+                    if (!promiseArr[1].err) {
                         data.push({
                             barcode: barcode,
                             studentID: barcode.slice(0, 5),
                             subject: global.keySubject[barcode[5]],
                             profile: promiseArr[1],
                             transaction: promiseArr[0],
-                            quota: promiseArr[2].totalQuota-promiseArr[2].usedQuota
+                            quota: promiseArr[2].totalQuota - promiseArr[2].usedQuota
                         })
                     }
-                    else{
+                    else {
                         window.alert('ไม่พบ ID ที่ค้นหา')
                     }
                     this.setState({ data: data })
@@ -150,12 +151,12 @@ class Manage extends React.Component {
         console.log(studentArr)
     }
 
-    addQuota(value){
+    addQuota(value) {
         this.setState({ loading: true })
         let promise = []
         let statedata = this.state.data
         let studentArr = this.state.data.map(data => {
-            return { studentID: data.studentID, subject: data.subject, value: value}
+            return { studentID: data.studentID, subject: data.subject, value: value }
         })
         for (let i in studentArr) {
             promise.push(fetch(global.postlink + '/post/v1/addQuota', {
@@ -188,153 +189,153 @@ class Manage extends React.Component {
                     <Grid item xs={6} md={6} lg={6}>
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
-                                <FormGroup row style={{ float: 'right'}}>
-                                <FormControlLabel
-                                    control={
-                                    <Switch
-                                        checked={this.state.recheck}
-                                        onChange={(e,c)=>{this.setState({recheck:c})}}
-                                        value={1}
-                                        color="secondary"
+                                <FormGroup row style={{ float: 'right' }}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={this.state.recheck}
+                                                onChange={(e, c) => { this.setState({ recheck: c }) }}
+                                                value={1}
+                                                color="secondary"
+                                            />
+                                        }
+                                        label={<label style={{ color: 'white' }}>{"Recheck"}</label>}
                                     />
-                                    }
-                                    label={<label style={{color:'white'}}>{"Recheck"}</label>}
-                                />
-                                <FormControlLabel
-                                    control={
-                                    <Switch
-                                        checked={this.state.multipleSelect}
-                                        onChange={(e,c)=>{this.setState({multipleSelect:c,data:[]})}}
-                                        value={1}
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={this.state.multipleSelect}
+                                                onChange={(e, c) => { this.setState({ multipleSelect: c, data: [] }) }}
+                                                value={1}
+                                            />
+                                        }
+                                        label={<label style={{ color: 'white' }}>{"Multiple Select"}</label>}
                                     />
-                                    }
-                                    label={<label style={{color:'white'}}>{"Multiple Select"}</label>}
-                                />
                                 </FormGroup>
                             </div>}
                             headerColor="orange"
                             content={
-                                this.state.multipleSelect?
-                                <div>
-                                    <ExpansionPanel style={{ width: '100%', background: 'white' }} disabled>
-                                        <ExpansionPanelSummary >
-                                            <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black" }}>ID</label></div>
-                                            </ItemGrid>
-                                            <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black" }}>Subject</label></div>
-                                            </ItemGrid>
-                                            <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black" }}>Name</label></div>
-                                            </ItemGrid>
-                                            <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black" }}>Balance</label></div>
-                                            </ItemGrid>
-                                            <ItemGrid md={3}>
-                                                <div align="center"><label style={{ color: "black" }}>Quota</label></div>
-                                            </ItemGrid>
-                                        </ExpansionPanelSummary>
-                                    </ExpansionPanel>
-                                    {
-                                        this.state.loading ?
+                                this.state.multipleSelect ?
+                                    <div>
+                                        <ExpansionPanel style={{ width: '100%', background: 'white' }} disabled>
+                                            <ExpansionPanelSummary >
+                                                <ItemGrid md={3}>
+                                                    <div align="center"><label style={{ color: "black" }}>ID</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                    <div align="center"><label style={{ color: "black" }}>Subject</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                    <div align="center"><label style={{ color: "black" }}>Name</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                    <div align="center"><label style={{ color: "black" }}>Balance</label></div>
+                                                </ItemGrid>
+                                                <ItemGrid md={3}>
+                                                    <div align="center"><label style={{ color: "black" }}>Quota</label></div>
+                                                </ItemGrid>
+                                            </ExpansionPanelSummary>
+                                        </ExpansionPanel>
+                                        {
+                                            this.state.loading ?
+                                                <div align="center"><CircularProgress size={100} style={{ margin: "20px" }} color="primary" /></div>
+                                                :
+                                                <div>
+                                                    {this.state.data.map((data, key) =>
+                                                        <Slide direction="up" in>
+                                                            <ExpansionPanel style={{ width: '100%' }} key={key}>
+                                                                <ExpansionPanelSummary>
+                                                                    <ItemGrid md={3}>
+                                                                        <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.studentID}</label></div>
+                                                                    </ItemGrid>
+                                                                    <ItemGrid md={3}>
+                                                                        <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.subject}</label></div>
+                                                                    </ItemGrid>
+                                                                    <ItemGrid md={3}>
+                                                                        <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.profile.firstname + '(' + data.profile.nickname + ')'}</label></div>
+                                                                    </ItemGrid>
+                                                                    <ItemGrid md={3}>
+                                                                        <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
+                                                                    </ItemGrid>
+                                                                    <ItemGrid md={3}>
+                                                                        <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.quota}</label></div>
+                                                                    </ItemGrid>
+                                                                </ExpansionPanelSummary>
+                                                                <ExpansionPanelDetails>
+                                                                    <div style={{ width: '100%', textAlign: 'center' }}><IconButton onClick={() => { this.deleteBarcode(data.barcode) }}><DeleteIcon /></IconButton></div>
+                                                                </ExpansionPanelDetails>
+                                                            </ExpansionPanel>
+                                                        </Slide>
+                                                    )}
+                                                </div>
+                                        }
+                                    </div>
+                                    :
+                                    <div>
+                                        {this.state.loading ?
                                             <div align="center"><CircularProgress size={100} style={{ margin: "20px" }} color="primary" /></div>
                                             :
-                                            <div>
-                                                {this.state.data.map((data, key) =>
-                                                    <Slide direction="up" in>
-                                                        <ExpansionPanel style={{ width: '100%' }} key={key}>
-                                                            <ExpansionPanelSummary>
-                                                                <ItemGrid md={3}>
-                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.studentID}</label></div>
-                                                                </ItemGrid>
-                                                                <ItemGrid md={3}>
-                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.subject}</label></div>
-                                                                </ItemGrid>
-                                                                <ItemGrid md={3}>
-                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.profile.firstname + '(' + data.profile.nickname + ')'}</label></div>
-                                                                </ItemGrid>
-                                                                <ItemGrid md={3}>
-                                                                    <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
-                                                                </ItemGrid>
-                                                                <ItemGrid md={3}>
-                                                                    <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.quota}</label></div>
-                                                                </ItemGrid>
-                                                            </ExpansionPanelSummary>
-                                                            <ExpansionPanelDetails>
-                                                                <div style={{ width: '100%', textAlign: 'center' }}><IconButton onClick={() => { this.deleteBarcode(data.barcode) }}><DeleteIcon /></IconButton></div>
-                                                            </ExpansionPanelDetails>
-                                                        </ExpansionPanel>
+                                            <div style={{ width: '100%' }}>
+                                                {this.state.data.map((data, key) => {
+                                                    return <Slide direction="up" in>
+                                                        <Grid container spacing={16} style={{ padding: '16px' }}>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'right' }}>
+                                                                    StudentID :&nbsp;
+                                                        </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'left' }}>
+                                                                    {data.studentID}
+                                                                </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'right' }}>
+                                                                    Name :&nbsp;
+                                                        </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'left' }}>
+                                                                    {data.profile.firstname + ' (' + data.profile.nickname + ')'}
+                                                                </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'right' }}>
+                                                                    Subject :&nbsp;
+                                                        </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'left' }}>
+                                                                    {data.subject}
+                                                                </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '300%', marginTop: '25px', textAlign: 'right' }}>
+                                                                    Balance :&nbsp;
+                                                        </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '300%', marginTop: '25px', textAlign: 'left', color: 'red' }}>
+                                                                    {data.transaction.total + ' บาท '}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
+                                                                </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'right' }}>
+                                                                    Quota :&nbsp;
+                                                        </div>
+                                                            </Grid>
+                                                            <Grid item md={6} xs={6}>
+                                                                <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '250%', marginTop: '25px', textAlign: 'left' }}>
+                                                                    {data.quota}
+                                                                </div>
+                                                            </Grid>
+                                                        </Grid>
                                                     </Slide>
-                                                )}
+                                                })}
                                             </div>
-                                    }
-                                </div>
-                                :
-                                <div>
-                                    {this.state.loading?
-                                        <div align="center"><CircularProgress size={100} style={{ margin: "20px" }} color="primary" /></div>
-                                        :
-                                        <div style={{width:'100%'}}>
-                                            {this.state.data.map((data,key)=>{
-                                                return <Slide direction="up" in>
-                                                <Grid container spacing={16} style={{padding:'16px'}}>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
-                                                            StudentID :&nbsp;
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
-                                                            {data.studentID}
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
-                                                            Name :&nbsp;
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
-                                                            {data.profile.firstname+' ('+data.profile.nickname+')'}
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
-                                                            Subject :&nbsp;
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
-                                                            {data.subject}
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'300%',marginTop:'25px',textAlign:'right'}}>
-                                                            Balance :&nbsp;
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'300%',marginTop:'25px',textAlign:'left',color:'red'}}>
-                                                            {data.transaction.total+' บาท '}{data.lastUpdate?(' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'right'}}>
-                                                            Quota :&nbsp;
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid item md={6} xs={6}>
-                                                        <div className={"fontTHSarabun"} style={{width:'100%',fontSize:'250%',marginTop:'25px',textAlign:'left'}}>
-                                                            {data.quota}
-                                                        </div>
-                                                    </Grid>
-                                                </Grid>
-                                                </Slide>
-                                            })}
-                                        </div>
-                                    }
-                                </div>
-                            }/>
+                                        }
+                                    </div>
+                            } />
                     </Grid>
                     <Grid item xs={6} md={6} lg={6}>
                         <RegularCard
@@ -345,26 +346,61 @@ class Manage extends React.Component {
                                     <Grid item md={6} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Absent') }}>Absent -800</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ลาฉุกเฉิน') }}>ลาฉุกเฉิน -800</button>
+                                        {/* <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ openAbsent: true }) }}>Absent</button>
+                                        <Dialog
+                                            open={this.state.openAbsent}
+                                            aria-labelledby="form-dialog-title"
+                                        >
+                                            <DialogTitle id="form-dialog-title">Absent</DialogTitle>
+                                            <DialogContent>
+
+                                                <div style={{ display: "inline-flex", padding: "10px" }}>
+                                                    <TextField
+                                                        autoFocus
+                                                        id="value"
+                                                        label="Value"
+                                                    />&nbsp;
+                                            <TextField
+                                                        id="reason"
+                                                        label="Reason"
+                                                    />&nbsp;
+                                        </div>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={()=>{this.setState({openAbsent:false})}} color="primary">
+                                                    Cancel
+                                    </Button>
+                                                <Button onClick={() => { console.log(1234)}} color="primary">
+                                                    Confirm
+                                    </Button>
+                                            </DialogActions>
+                                        </Dialog> */}
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ไม่มาไม่ลา') }}>ไม่มาไม่ลา -800</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(0, 'แจ้งลาแล้ว') }}>แจ้งลาแล้ว 0</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1)}}>Increase Quota</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
                                     </Grid>
-                                    <Grid item md={6}  xs={12}>
-                                    <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1) }}>Increase Quota</button>
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
                                     </Grid>
                                     <Dialog
                                         open={this.state.open}
@@ -389,7 +425,14 @@ class Manage extends React.Component {
                                             <Button onClick={this.handleClose} color="primary">
                                                 Cancel
                                     </Button>
-                                            <Button onClick={() => { if (document.getElementById('value').value && document.getElementById('reason').value) this.addTransaction(parseInt(document.getElementById('value').value), document.getElementById('reason').value); this.setState({ open: false }) }} color="primary">
+                                            <Button onClick={() => {
+                                                if (document.getElementById('value').value && document.getElementById('reason').value) {
+                                                    this.addTransaction(parseInt(document.getElementById('value').value), document.getElementById('reason').value);
+                                                    this.setState({ open: false })
+                                                } else {
+                                                    window.alert("กรุณากรอกข้อมูลให้ครบถ้วน")
+                                                }
+                                            }} color="primary">
                                                 Confirm
                                     </Button>
                                         </DialogActions>
