@@ -1,20 +1,20 @@
 {
   "name": "monkey-admin-react",
-  "productName" : "Monkey Admin",
+  "productName": "Monkey Admin",
   "version": "0.1.0",
-  "description":"coding by react framework",
+  "description": "coding by react framework",
   "private": true,
   "author": "Witch",
   "license": "MONKEY-MONKEY",
-  "build":{
+  "build": {
     "appId": "com.example.electron-cra",
     "files": [
-	    "build/**/*",
-	    "node_modules/**/*"
-	],
-	"directories":{
-	    "buildResources": "assets"
-	}
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "dependencies": {
     "chartist": "^0.10.1",
@@ -31,6 +31,7 @@
     "perfect-scrollbar": "^1.3.0",
     "query-string": "^5.1.0",
     "react": "^16.2.0",
+    "react-calendar": "^2.14.0",
     "react-chartist": "^0.13.1",
     "react-datepicker": "^1.2.1",
     "react-dom": "^16.2.0",

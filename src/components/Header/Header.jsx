@@ -36,18 +36,18 @@ const btnStyle = {
     }
 }
 class Header extends React.Component {
-    // makeBrand() {
-    //     var name;
-    //     this.props.routes.map((prop, key) => {
-    //         if (prop.path === this.props.location.pathname) {
-    //             name = prop.navbarName;
-    //         }
-    //         return null;
-    //     })
-    //     return name;
-    // }
+    makeBrand() {
+        var name;
+        this.props.routes.map((prop, key) => {
+            if (prop.path === this.props.location.pathname) {
+                name = prop.navbarName;
+            }
+            return null;
+        })
+        return name;
+    }
     render() {
-        console.log(this.props.history)
+        console.log(this.props.routes)
         const { classes, color } = this.props;
         return (
             <div className={classes.root}>
@@ -72,6 +72,7 @@ class Header extends React.Component {
                                 <i class="material-icons">&#xE5CC;</i>
                             </Button>
                         </Tooltip>
+                        
                         <Hidden xsDown>
                             <HeaderLinks handleSearch={this.props.handleSearch} />
                         </Hidden>

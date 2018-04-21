@@ -186,7 +186,7 @@ class Manage extends React.Component {
                     }} />
                 </Grid>
                 <Grid container style={{ padding: '20px' }} spacing={24} justify={"space-between"}>
-                    <Grid item xs={6} md={6} lg={6}>
+                <Grid item xs={6} md={8} lg={8}>
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
                                 <FormGroup row style={{ float: 'right' }}>
@@ -337,41 +337,23 @@ class Manage extends React.Component {
                                     </div>
                             } />
                     </Grid>
-                    <Grid item xs={6} md={6} lg={6}>
+                    <Grid item xs={6} md={4} lg={4}>
                         <RegularCard
                             cardTitle={"Action"}
                             headerColor="green"
                             content={
                                 <Grid container justify={"center"} className={"melSizeHalf"}>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ลาฉุกเฉิน') }}>ลาฉุกเฉิน -800</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ไม่มาไม่ลา') }}>ไม่มาไม่ลา -800</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(0, 'แจ้งลาแล้ว') }}>แจ้งลาแล้ว 0</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1) }}>Increase Quota</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
                                     </Grid>
                                     <Dialog
                                         open={this.state.open}
@@ -398,7 +380,7 @@ class Manage extends React.Component {
                                     </Button>
                                             <Button onClick={() => {
                                                 if (document.getElementById('value').value && document.getElementById('reason').value) {
-                                                    this.addTransaction(parseInt(document.getElementById('value').value), document.getElementById('reason').value);
+                                                    this.addTransaction(-1*parseInt(document.getElementById('value').value), document.getElementById('reason').value);
                                                     this.setState({ open: false })
                                                 } else {
                                                     window.alert("กรุณากรอกข้อมูลให้ครบถ้วน")

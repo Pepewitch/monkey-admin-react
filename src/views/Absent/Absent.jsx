@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    TextField, Grid, Paper, Button, IconButton, FormControl, FormControlLabel, FormGroup,
+    TextField, Grid, Paper, Button, IconButton, FormControl, FormControlLabel, FormGroup, FormLabel,
     ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
     Switch
 } from 'material-ui'
@@ -8,7 +8,8 @@ import { ItemGrid, RegularCard } from 'components'
 import { global, serialize } from 'variables/general'
 import DeleteIcon from 'material-ui-icons/Delete'
 import Slide from 'material-ui/transitions/Slide';
-
+import Calendar from 'react-calendar'
+import Radio, { RadioGroup } from 'material-ui/Radio';
 const btnStyle = {
     height: '100%',
     width: '100%',
@@ -44,7 +45,8 @@ class Manage extends React.Component {
             open: false,
             multipleSelect: false,
             recheck: true,
-            openAbsent: false
+            absentDate: new Date(),
+            absentReason: "ไม่มา และ ไม่แจ้งลา"
         }
         this.handleClose = this.handleClose.bind(this)
     }
@@ -176,7 +178,65 @@ class Manage extends React.Component {
         })
         console.log(studentArr)
     }
-
+    handleAbsent(){
+        let reason = document.getElementById('absentReason').value
+        if(this.state.absentTime && reason.length>0){
+            fetch(global.postlink + '/post/getConfig',{
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                }
+            }).then(d=>d.json()).then((config)=>{
+                let year = config.defaultQuarter.quarter.year;
+                let quarter = config.defaultQuarter.quarter.quarter;
+                let pickDate = this.state.absentDate
+                let find = false
+                let hour = parseInt(this.state.absentTime)
+                fetch(global.postlink + '/post/v1/studentTimeTable',{
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: serialize({ year: year, quarter: quarter, studentID: this.state.data[0].studentID.slice(0,5) })
+                }).then(d=>d.json()).then(timetable=>{
+                    let hb = timetable.hybrid;
+                    pickDate.setHours(hour,0,0,0);
+	                for (let i in hb) {
+                        let t = new Date(hb[i].day);
+                        if (t.getDay() === pickDate.getDay() && t.getHours() === hour && (hb[i].subject == (this.state.data[0].subject[0]))) {
+                            fetch(global.postlink + '/post/v1/addStudentAbsent',{
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                                },
+                                body: serialize({
+                                    userID: this.state.data[0].studentID.slice(0,5),
+                                    date: pickDate.getTime(),
+                                    hybridID: hb[i].hybridID,
+                                    reason: this.state.absentReason,
+                                    sender: "Admin"
+                                })
+                            })
+                            find = true;
+                        }
+                    }
+                    if(!find){
+                        window.alert("ไม่มี FHB ในเวลาที่คุณเลือก")
+                    }
+                    else{
+                        this.addTransaction(-800,this.state.absentReason)
+                        window.alert("Success!")
+                        this.setState({open:false})
+                    }
+                })
+            })
+        }else{
+            window.alert("กรุณาเลือกวันเวลา และ ใส่เหตุผลให้เรียบร้อย")
+        }
+    }
     render() {
         return (
             <div>
@@ -186,7 +246,7 @@ class Manage extends React.Component {
                     }} />
                 </Grid>
                 <Grid container style={{ padding: '20px' }} spacing={24} justify={"space-between"}>
-                    <Grid item xs={6} md={6} lg={6}>
+                    <Grid item xs={6} md={8} lg={8}>
                         <RegularCard
                             cardTitle={<div>{"Selected ID"}
                                 <FormGroup row style={{ float: 'right' }}>
@@ -255,7 +315,7 @@ class Manage extends React.Component {
                                                                         <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.profile.firstname + '(' + data.profile.nickname + ')'}</label></div>
                                                                     </ItemGrid>
                                                                     <ItemGrid md={3}>
-                                                                        <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
+                                                                        <div align="center"><label style={{ color: "red", fontSize: '130%' }}>{data.transaction.total}{data.lastUpdate !== undefined ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}</label></div>
                                                                     </ItemGrid>
                                                                     <ItemGrid md={3}>
                                                                         <div align="center"><label style={{ color: "black", fontSize: '110%' }}>{data.quota}</label></div>
@@ -316,7 +376,7 @@ class Manage extends React.Component {
                                                             </Grid>
                                                             <Grid item md={6} xs={6}>
                                                                 <div className={"fontTHSarabun"} style={{ width: '100%', fontSize: '300%', marginTop: '25px', textAlign: 'left', color: 'red' }}>
-                                                                    {data.transaction.total + ' บาท '}{data.lastUpdate ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
+                                                                    {data.transaction.total + ' บาท '}{data.lastUpdate !== undefined ? (' (' + (data.lastUpdate > 0 ? ('+' + data.lastUpdate) : data.lastUpdate) + ')') : ''}
                                                                 </div>
                                                             </Grid>
                                                             <Grid item md={6} xs={6}>
@@ -337,73 +397,63 @@ class Manage extends React.Component {
                                     </div>
                             } />
                     </Grid>
-                    <Grid item xs={6} md={6} lg={6}>
+                    <Grid item xs={6} md={4} lg={4}>
                         <RegularCard
                             cardTitle={"Action"}
                             headerColor="green"
                             content={
                                 <Grid container justify={"center"} className={"melSizeHalf"}>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(10000, 'Deposit from MonkeyAdmin') }}>Deposit +10000</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'Withdraw from MonkeyAdmin') }}>Test -800</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-100, 'ลืมอุปกรณ์') }}>ลืมอุปกรณ์ -100</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ลาฉุกเฉิน') }}>ลาฉุกเฉิน -800</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(-800, 'ไม่มาไม่ลา') }}>ไม่มาไม่ลา -800</button>
+                                    <Grid item md={12} xs={12}>
+                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { if (this.state.multipleSelect) window.alert("คำสั่งนี้ไม่สามารถใช้ multiple select ได้"); else {this.setState({ open: true , absentDate: new Date() , absentReason:"ไม่มา และ ไม่แจ้งลา" })}}}>ไม่มาไม่ลา -800</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addTransaction(0, 'แจ้งลาแล้ว') }}>แจ้งลาแล้ว 0</button>
                                     </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ open: true }) }}>Custom</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
+                                    <Grid item md={12} xs={12}>
                                         <button className={"manageBtn"} style={btnStyle} onClick={() => { this.setState({ data: [] }) }}>Clear</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(1) }}>Increase Quota</button>
-                                    </Grid>
-                                    <Grid item md={6} xs={12}>
-                                        <button className={"manageBtn"} style={btnStyle} onClick={() => { this.addQuota(-1) }}>Decrease Quota</button>
                                     </Grid>
                                     <Dialog
                                         open={this.state.open}
                                         aria-labelledby="form-dialog-title"
                                     >
-                                        <DialogTitle id="form-dialog-title">Create a new transaction</DialogTitle>
+                                        <DialogTitle id="form-dialog-title">ไม่มาไม่ลา</DialogTitle>
                                         <DialogContent>
+                                            <Grid container spacing={24}>
+                                                <Grid item md={12}>
+                                                    <TextField fullWidth label={"Reason"} id={"absentReason"} value={this.state.absentReason} onChange={(e)=>this.setState({absentReason:e.target.value})}/>
+                                                </Grid>
+                                                <Grid item md={8}>
+                                                <Calendar
+                                                    onChange={(date) => { this.setState({ absentDate: date }) }}
+                                                    value={this.state.absentDate}
+                                                />
+                                                </Grid>
+                                                <Grid item md={4}>
+                                                <FormControl component="fieldset">
+                                                    <RadioGroup
+                                                        name="time"
+                                                        value={this.state.absentTime}
+                                                        onChange={(e) => { this.setState({ absentTime: e.target.value }) }}
+                                                    >
+                                                        <FormControlLabel value="8" control={<Radio />} label="8:00-10:00" />
+                                                        <FormControlLabel value="10" control={<Radio />} label="10:00-12:00" />
+                                                        <FormControlLabel value="13" control={<Radio />} label="13:00-15:00" />
+                                                        <FormControlLabel value="15" control={<Radio />} label="15:00-17:00" />
+                                                        <FormControlLabel value="17" control={<Radio />} label="17:00-19:00" />
+                                                    </RadioGroup>
+                                                </FormControl>
+                                                </Grid>
+                                            </Grid>
 
-                                            <div style={{ display: "inline-flex", padding: "10px" }}>
-                                                <TextField
-                                                    autoFocus
-                                                    id="value"
-                                                    label="Value"
-                                                />&nbsp;
-                                            <TextField
-                                                    id="reason"
-                                                    label="Reason"
-                                                />&nbsp;
-                                        </div>
                                         </DialogContent>
                                         <DialogActions>
                                             <Button onClick={this.handleClose} color="primary">
                                                 Cancel
                                     </Button>
-                                            <Button onClick={() => {
-                                                if (document.getElementById('value').value && document.getElementById('reason').value) {
-                                                    this.addTransaction(parseInt(document.getElementById('value').value), document.getElementById('reason').value);
-                                                    this.setState({ open: false })
-                                                } else {
-                                                    window.alert("กรุณากรอกข้อมูลให้ครบถ้วน")
-                                                }
-                                            }} color="primary">
+                                            <Button onClick={()=>{this.handleAbsent()}} color="primary">
                                                 Confirm
                                     </Button>
                                         </DialogActions>
